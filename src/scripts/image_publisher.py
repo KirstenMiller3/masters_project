@@ -7,6 +7,7 @@ import sys
 import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError 
+import time
 
 
 
@@ -18,7 +19,6 @@ def image_publisher():
     rospy.init_node('image_publisher', anonymous=True)
     #rate = rospy.Rate(10) # not sure this is necessary
     bridge = CvBridge()
-
 
 
 
@@ -51,11 +51,12 @@ def image_publisher():
         rval, frame = cap.read()
 
         # ROS image stuff
-        image_message = bridge.cv2_to_imgmsg(frame, encoding="bgr8")
+        image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
         #if image_message != None:
             #print "There's something here"
         #rospy.loginfo(image_message)
         pub.publish(image_message)
+
 
 
         key = cv2.waitKey(20)

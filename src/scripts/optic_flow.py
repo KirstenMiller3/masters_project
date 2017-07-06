@@ -6,12 +6,53 @@ from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import cv2
 
+import sys
+#sys.path.insert(0. ../../msg)
+from masters_project.msg import flow_vectors, flow_vectors_list
+
 
 class Optic_Flow():
 
     def callback(self, ros_image):
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(ros_image, desired_encoding="passthrough")
+            self.cv_image = self.bridge.imgmsg_to_cv2(ros_image, desired_encoding="passthrough")
+            if self.cv_image != None:
+                print 'ENTERED'
+                prev = self.cv_image
+                prevgray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
+                gray = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2GRAY)
+
+                # returns a 2-channel image with X and Y magnitudes and orientation
+                flow = cv2.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+
+                fx, fy = flow[:, :, 0], flow[:, :, 1]
+                temp = flow_vectors()
+                msg = flow_vectors_list()
+                '''fx_list = []
+                for cell in fx.flat:
+                    print cell
+                    temp.flow_vectors[0] = cell
+                    msg.parameters[i] = temp
+
+                                print fx
+                temp = flow_vectors()
+                msg = flow_vectors_list()
+                for i in range(fx):
+                    temp.flow_vectors[0] = fx[i]
+                    temp.flow_vectors[1] = fy[i]
+                    msg.parameters[i] = temp'''
+               
+                for (x, y) in self.matrix_iterator(fx, fy):
+                    temp.flow_vectors[0] = x
+                    temp.flow_vectors[1] = y
+                    msg.parameters += [temp]
+
+
+
+
+
+
+                self.pub.publish(msg)
         except CvBridgeError as e:
             print(e)
 
@@ -39,9 +80,16 @@ class Optic_Flow():
         bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         return bgr
 
+    def matrix_iterator(self, x_matrix, y_matrix):
+        for i in range(len(x_matrix)):
+            for j in range(len(x_matrix[i])):
+                yield(x_matrix[i][j], y_matrix[i][j])
+
+
     def __init__(self):
 
         self.bridge = CvBridge()
+        self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors_list, queue_size=10)
 
         self.show_hsv = False
         self.cv_image = None
