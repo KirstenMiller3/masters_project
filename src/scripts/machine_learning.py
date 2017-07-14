@@ -24,16 +24,21 @@ predicted= model.predict(x_test)
 # INSTEAD OF DOING MACHINE LEARNING THIS NODE IS MORE DOING PICKLING OF VIDEOS AND TRAINING SETS AND THEN
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
 from sklearn import svm
-from masters_project.msg import flow_vectors_list, flow_vectors
+from masters_project.msg import flow_vectors_list, flow_vectors, svm_model
 from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
-import pickle
+import pickle as p
 
 
-class Machine_learning():
+class Machine_learning:
 
     def __init__(self):
+        rospy.init_node('machine_learning', anonymous=True)
+
+        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.callback)
+        rospy.Subscriber("compute_fit", Bool, self.compute_fit)
+        rospy.Subscriber("video_name", String, self.set_training)
         self.live = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
                         1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
@@ -64,6 +69,7 @@ class Machine_learning():
         self.index = 0
         self.X = []
         self.Y = []
+        self.pub = rospy.Publisher("svm_model", svm_model, queue_size=100)
 
     def callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s %s", data.width, data.height)
@@ -94,52 +100,9 @@ class Machine_learning():
     def compute_fit(self, data):
         #print self.X
         #print self.Y
+        print "ENTERED COMPUTE FIT"
         self.model.fit(self.X, self.Y)
         print self.model.score(self.X, self.Y)
-
-
-    def set_training(self, data):
-        self.current_training = getattr(self, data.data)
-        self.index = 0
-
-
-    def listener(self):
-        # In ROS, nodes are uniquely named. If two nodes with the same
-        # node are launched, the previous one is kicked off. The
-        # anonymous=True flag means that rospy will choose a unique
-        # name for our 'listener' node so that multiple listeners can
-        # run simultaneously.
-        rospy.init_node('machine_learning', anonymous=True)
-
-        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.callback)
-        rospy.Subscriber("compute_fit", Bool, self.compute_fit)
-        rospy.Subscriber("video_name", String, self.set_training)
-
-        # spin() simply keeps python from exiting until this node is stopped
-        rospy.spin()
-
-    # Helper function to convert the subscribed data into an image shape
-    def convert_parameters(self, w, h, f):
-        flow_matrix = [[0 for x in range(w)] for y in range(h)]
-
-        count = 0
-        for i in range(h - 1):
-            for j in range(w - 1):
-                flow_matrix[i][j] = f[count]
-                count += 1
-
-        return flow_matrix
-
-    def svm(self):
-        self.model.fit(self.X, self.training)
-        print self.model.score(self.X, self.training)
-
-
-if __name__ == '__main__':
-    try:
-        ml = Machine_learning()
-        ml.listener()
-    except rospy.ROSInterruptException:
-        print 'Shutting down'
-
-
+        # maybe use cPickle as its 1000 times faster
+        s = p.dumps(self.model)
+        self.pub.publish(s)

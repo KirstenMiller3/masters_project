@@ -10,7 +10,7 @@ import sys
 from masters_project.msg import flow_vectors, flow_vectors_list
 
 
-class Optic_Flow():
+class Optic_Flow:
     def __init__(self):
 
         self.bridge = CvBridge()
