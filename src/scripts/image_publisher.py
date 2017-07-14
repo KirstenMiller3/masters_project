@@ -6,22 +6,24 @@ import cv2
 import sys
 import numpy as np
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError 
-import time
+from cv_bridge import CvBridge, CvBridgeError
+from std_msgs.msg import String
 
 
-
+"""
+"""
 def image_publisher():
 
-    pub = rospy.Publisher('camera_image', Image, queue_size=10)
-    #if pub != None:
-        #print "pub created"
-    rospy.init_node('image_publisher', anonymous=True)
-    #rate = rospy.Rate(10) # not sure this is necessary
+    # This node is publishing to the camera_image topic with message type Image.
+    pub = rospy.Publisher('camera_image', Image, queue_size=1000)
+    # Publisher so machine learning node knows which training matrix to use
+    pub2 = rospy.Publisher('video_name', String, queue_size=1000)
+    # Tells rospy the name of node
+    rospy.init_node('image_publisher', anonymous=True) # maybe don't need this as won't normally be more than one node
     bridge = CvBridge()
+    rate = rospy.Rate(0.5) # Make publishing rate once every 2 seconds (0.5Hz)
 
-
-
+    # If user doesn't enter the video input print error message
     if len(sys.argv) < 2:
         print "You must give an argument to open a video stream."
         print "  It can be a number as video device, e.g.: 0 would be /dev/video0"
@@ -34,36 +36,66 @@ def image_publisher():
     if len(resource) < 3:
         resource_name = "/dev/video" + resource
         resource = int(resource)
+        vidfile = False
     else:
         resource_name = resource
+        vidfile = True
     print "Trying to open resource: " + resource_name
     cap = cv2.VideoCapture(resource)
+    # Check whether cap is initialized correctly
     if not cap.isOpened():
         print "Error opening resource: " + str(resource)
         print "Maybe opencv VideoCapture can't open it"
         exit(0)
 
+    # Send the name of video to machine_learning node
+    if resource == 1:
+        resource = "live"
+    else:
+        resource = resource[:-4]
+    pub2.publish(resource)
 
+    # Works out the frames per second of the video file/stream
+    (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+    if int(major_ver)  < 3 :
+        fps = cap.get(cv2.cv.CV_CAP_PROP_FPS) # Get number of frames per second
+        print "Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps)
+    else :
+        fps = cap.get(cv2.CAP_PROP_FPS) # Get number of frames per second
+        print "Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps)
+    
+    # If video is opened correctly start reading video
     print "Correctly opened resource, starting to show feed."
+    # Capture frame-by-frame (rval is a bool returned by cap.read() if frame is read correctly)
     rval, frame = cap.read()
+    last = None
+    # While video not ended
     while rval:
+        # Display the image/frame
         cv2.imshow("Stream: " + resource_name, frame)
+        
+        # If playing a videofile convert it so is in correct format
+        if vidfile and frame is not None:
+            frame = np.uint8(frame)
+        # Converts image from cv2 to ros format
+        image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
+
+        if image_message != last:
+            # Publishes frame to camera_image topic
+            pub.publish(image_message)
+
+        last = image_message
+        # Get next frame
         rval, frame = cap.read()
 
-        # ROS image stuff
-        image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
-        #if image_message != None:
-            #print "There's something here"
-        #rospy.loginfo(image_message)
-        pub.publish(image_message)
-
-
-
-        key = cv2.waitKey(20)
-        # print "key pressed: " + str(key)
-        # exit on ESC, you may want to uncomment the print to know which key is ESC for you
+        # Introduces a delay of 500 miliseconds so that each frame is published
+        key = cv2.waitKey(100) 
+        
+        # exit loop if user presses ESC
         if key == 27 or key == 1048603:
             break
+    # Release capture at end and destroy window
+    cap.release()
     cv2.destroyWindow("preview")
 
 

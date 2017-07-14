@@ -1,0 +1,3 @@
+rostopic pub -l /compute_fit std_msgs/Bool "data: true"
+
+https://codeyarns.com/2015/01/20/how-to-use-opencv-waitkey-in-python/

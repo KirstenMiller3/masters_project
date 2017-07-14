@@ -1,3 +1,3 @@
 flow_vectors[] parameters
-uint 8 height
-uint 8 width
+uint32 height
+uint32 width
