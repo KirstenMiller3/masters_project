@@ -1,1 +1,1 @@
-float32[2] flow_vectors
+coordinate[2] flow_vectors

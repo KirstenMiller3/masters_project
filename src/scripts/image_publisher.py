@@ -17,7 +17,7 @@ def image_publisher():
     # This node is publishing to the camera_image topic with message type Image.
     pub = rospy.Publisher('camera_image', Image, queue_size=1000)
     # Publisher so machine learning node knows which training matrix to use
-    pub2 = rospy.Publisher('video_name', String, queue_size=1000)
+    pub2 = rospy.Publisher('video_name', String, queue_size=9)
     # Tells rospy the name of node
     rospy.init_node('image_publisher', anonymous=True) # maybe don't need this as won't normally be more than one node
     bridge = CvBridge()
@@ -49,11 +49,11 @@ def image_publisher():
         exit(0)
 
     # Send the name of video to machine_learning node
-    if resource == 1:
+    if resource == 0:
         resource = "live"
     else:
         resource = resource[:-4]
-    pub2.publish(resource)
+    pub2.publish(str(resource))
 
     # Works out the frames per second of the video file/stream
     (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
@@ -69,6 +69,7 @@ def image_publisher():
     # Capture frame-by-frame (rval is a bool returned by cap.read() if frame is read correctly)
     rval, frame = cap.read()
     last = None
+    loop = 0
     # While video not ended
     while rval:
         # Display the image/frame
@@ -77,19 +78,23 @@ def image_publisher():
         # If playing a videofile convert it so is in correct format
         if vidfile and frame is not None:
             frame = np.uint8(frame)
-        # Converts image from cv2 to ros format
-        image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
 
-        if image_message != last:
+        smaller = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        # Converts image from cv2 to ros format
+        image_message = bridge.cv2_to_imgmsg(smaller, encoding="passthrough")
+
+
+        if image_message != last and loop % 4 == 0:
             # Publishes frame to camera_image topic
             pub.publish(image_message)
 
+        loop += 1
         last = image_message
         # Get next frame
         rval, frame = cap.read()
 
         # Introduces a delay of 500 miliseconds so that each frame is published
-        key = cv2.waitKey(100) 
+        key = cv2.waitKey(100)
         
         # exit loop if user presses ESC
         if key == 27 or key == 1048603:
@@ -105,6 +110,7 @@ def image_publisher():
 if __name__ == '__main__':
     try:
         image_publisher()
+        # rospy.spin()
     except rospy.ROSInterruptException:
         pass
 

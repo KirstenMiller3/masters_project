@@ -29,12 +29,16 @@ class Classifier:
 
     def helper(self, data):
         temp = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
-
+        print "HELPING"
         for i in range(len(temp)):
             x = temp[i].flow_vectors
-            self.X.append([x[0], x[1]])
+            coords = x[0].coordinates
+            coords2 = x[1].coordinates
+
+            self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
 
     def classify(self, data):
+        print "CLASSIFY"
         self.model.predict(self.X)
 
 

@@ -2,25 +2,28 @@
 
 import rospy
 from sensor_msgs.msg import Image
+from std_msgs.msg import Int8MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import cv2
 
 import sys
-from masters_project.msg import flow_vectors, flow_vectors_list
+from masters_project.msg import flow_vectors, flow_vectors_list, coordinate
 
 
 class Optic_Flow:
     def __init__(self):
 
         self.bridge = CvBridge()
-        self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors_list, queue_size=1000)
+        self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors_list, queue_size=100)
+
 
         self.show_hsv = False
         self.cv_image = None
         self.once = True
         self.blerg = False
         self.prevgray = None
+        self.count = 0
 
         # rospy.Rate(20)
         rospy.init_node('optic_flow', anonymous=True)
@@ -66,7 +69,7 @@ class Optic_Flow:
             # cv2.imwrite(str(self.count)+".png", self.cv_image) # testing to make sure no frames are published twice.
             # Get around the right number of frames but it varies a bit so most be sending some repeats! Maybe to do
             # with rospy.rate
-
+            self.count += 1
             # For the first image we receive convert it to gray and set it as prev so that we can compute optical flow from next image and prev one
             if self.cv_image is not None and self.once:
                 self.prevgray = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2GRAY)
@@ -84,19 +87,44 @@ class Optic_Flow:
                 flow = cv2.calcOpticalFlowFarneback(self.prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
                 # Set current image to previous
                 self.prevgray = gray
-                fx, fy = flow[:, :, 0], flow[:, :, 1]
+                #fx, fy = flow[:, :, 0], flow[:, :, 1]
+                step = 16
+
+                h, w = self.cv_image.shape[:2]
+                y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
+                fx, fy = flow[y, x].T
+                lines = np.vstack([x, y, x + fx, y + fy]).T.reshape(-1, 2, 2)
+                lines = np.int32(lines + 0.5)
+
+                print "!!!!" + str(len(lines)) + " " + str(len(lines[0])) + " " + str(len(lines[0][0]))
+
+                print lines
+                #print "!!!!!rows" + str(len(fx)) + "columns" + str(len(fx[0]))
+                start_points = coordinate()
+                end_points = coordinate()
                 temp = flow_vectors()
                 msg = flow_vectors_list()
 
+                """
                 # Iterate over flow vector array of image and add each one to the custom message
                 for (x, y) in self.matrix_iterator(fx, fy):
                     temp.flow_vectors[0] = x
                     temp.flow_vectors[1] = y
                     msg.parameters += [temp]
+                """
+
+                for i in range(len(lines)):
+                    start_points.coordinates[0] = lines[i][0][0]
+                    start_points.coordinates[1] = lines[i][0][1]
+                    end_points.coordinates[0] = lines[i][1][0]
+                    end_points.coordinates[1] = lines[i][1][1]
+                    temp.flow_vectors[0] = start_points
+                    temp.flow_vectors[1] = end_points
+                    msg.parameters += [temp]
 
                 # Don't think I need these anymore this was when I thought I had to reassemble list into image shape
                 msg.height = height # when printing out height in machine learning node it is 0 WHY?????
-                msg.width = width # width is 640
+                msg.width = width # width is 640 ~160
 
                 # publish flow vectors message
                 self.pub.publish(msg)
@@ -137,7 +165,6 @@ class Optic_Flow:
         for i in range(len(x_matrix)):
             for j in range(len(x_matrix[i])):
                 yield(x_matrix[i][j], y_matrix[i][j])
-
 
 
 
