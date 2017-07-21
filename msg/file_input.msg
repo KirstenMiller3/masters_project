@@ -1,2 +1,2 @@
-uint8[] classifiers
+int32[] classifiers
 string name

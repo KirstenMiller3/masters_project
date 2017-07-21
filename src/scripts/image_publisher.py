@@ -53,11 +53,14 @@ def image_publisher():
         resource = "live"
     else:
         resource = resource[:-4]
+
+    rospy.sleep(1)
+
     pub2.publish(str(resource))
 
     # Works out the frames per second of the video file/stream
     (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
-    if int(major_ver)  < 3 :
+    if int(major_ver) < 3:
         fps = cap.get(cv2.cv.CV_CAP_PROP_FPS) # Get number of frames per second
         print "Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps)
     else :
@@ -70,6 +73,9 @@ def image_publisher():
     rval, frame = cap.read()
     last = None
     loop = 0
+
+
+
     # While video not ended
     while rval:
         # Display the image/frame
@@ -87,6 +93,7 @@ def image_publisher():
         if image_message != last and loop % 4 == 0:
             # Publishes frame to camera_image topic
             pub.publish(image_message)
+
 
         loop += 1
         last = image_message

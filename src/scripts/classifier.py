@@ -3,7 +3,8 @@ import rospy
 from masters_project.msg import svm_model, flow_vectors_list
 from std_msgs.msg import Bool
 import pickle as p
-
+from sklearn import metrics, svm
+from sklearn.model_selection import GridSearchCV
 
 class Classifier:
 
@@ -17,12 +18,13 @@ class Classifier:
 
         self.model = None
         self.X = []
+        self.prediction = None
+        self.blerg = [0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,0]
+        self.w = [0,0,0,1,1,1,1,1,1,0,0,0,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0]
 
-        # spin() simply keeps python from exiting until this node is stopped
 
     def callback(self, data):
         print "I AM ALIVE"
-        # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
         self.model = p.loads(data.pickles)
         print self.model
         rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.helper)
@@ -39,8 +41,32 @@ class Classifier:
 
     def classify(self, data):
         print "CLASSIFY"
-        self.model.predict(self.X)
+        self.prediction = self.model.predict(self.X)
+        print self.prediction
+        parameters = {'kernel': ('linear', 'rbf'), 'C': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'gamma':
+            [0.01, 0.02, 0.03, 0.04, 0.05, 0.10, 0.2, 0.3, 0.4, 0.5]}
+        m = svm.SVC()
+        grid = GridSearchCV(estimator=m, param_grid=parameters)
 
+        if len(self.X) < len(self.w):
+            self.w = self.w[:len(self.X)]
+        else:
+            self.X = self.X[:len(self.w)]
+        grid.fit(self.X, self.w)
+        print(grid)
+        print(grid.best_score_)
+        print(grid.best_estimator_)
+        print metrics.accuracy_score(self.prediction, self.w)
+
+
+
+
+
+
+        file = open("prediction_file", "w")
+        for x in self.prediction:
+            file.write(str(x) + ",")
+        file.close()
 
 
 if __name__ == '__main__':

@@ -41,6 +41,7 @@ class Machine_learning:
         rospy.Subscriber("compute_fit", Bool, self.compute_fit)
         rospy.Subscriber("video_name", String, self.set_training)
         rospy.Subscriber("classification_data", file_input, self.add_data)
+        rospy.Subscriber("reset_index", Bool, self.reset_index)
         self.classifications = {}
         self.live = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
@@ -88,7 +89,7 @@ class Machine_learning:
 
             tempX.append([coords[0], coords[1], coords2[0], coords2[1]])
 
-        y = self.current_training[self.index]
+        y = self.classifications[self.current_training][self.index]
         print self.index
         print y
         if y == 1:
@@ -121,14 +122,17 @@ class Machine_learning:
         self.pub.publish(msg)
         print "PUBLISHING"
 
-
     def set_training(self, data):
-        self.current_training = self.classifications[data.data]
+        self.current_training = data.data
         self.index = 0
 
     def add_data(self, data):
-        self.classifications[data.name] = data.classifiers
+        print "Entered"
+        self.classifications[data.name] = list(data.classifiers)
         print self.classifications[data.name]
+
+    def reset_index(self, data):
+        self.index = 0
 
 if __name__ == '__main__':
      try:
