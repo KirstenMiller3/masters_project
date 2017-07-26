@@ -8,6 +8,8 @@ import cv2
 
 """
 Made a node to save images so that classification of webcam streams is easier
+and so that the images saved will be the same as the frames sent by image_publisher
+node (as the node drops quite a lot of frames)
 
 """
 class Image_Saver:
@@ -17,6 +19,7 @@ class Image_Saver:
 
         self.cv_image = None
         self.count = 0
+
         rospy.init_node('image_saver', anonymous=True)
 
         rospy.Subscriber('camera_image', Image, self.callback)
@@ -38,7 +41,6 @@ class Image_Saver:
 
         except CvBridgeError as e:
             print(e)
-
 
 
 if __name__ == '__main__':

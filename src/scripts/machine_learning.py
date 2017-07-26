@@ -6,20 +6,7 @@
 # Support vector machines are the lines to split the support vectors
 # into different classification groups
 
-'''
-from sklearn import svm
-# Assumed you have, X (predictor) and Y (target) for training data set
-# and x_test(predictor) of test_dataset
-# Create SVM classification object
-model = svm.svc(kernel='linear', c=1, gamma=1)
-# there is various option associated with it, like changing kernel,
-# gamma and C value. Will discuss more # about it in next section.Train
-# the model using the training sets and check score
-model.fit(X, y)
-model.score(X, y)
-#Predict Output
-predicted= model.predict(x_test)
-'''
+
 
 # INSTEAD OF DOING MACHINE LEARNING THIS NODE IS MORE DOING PICKLING OF VIDEOS AND TRAINING SETS AND THEN
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
@@ -29,110 +16,124 @@ from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
 import pickle as p
+import os
 import time
 
 
+'''
+This node enables the software to train to classify things
+'''
 class Machine_learning:
-
+    # Sets up the instance variables for the class and subscribes to topics and initialises node
     def __init__(self):
+        # IS THIS A RIDICULOUS NUMBER OF SUBSCRIBERS?? BAD DESIGN???
+        # also don't have topic and method names the same it's confusing
         rospy.init_node('machine_learning', anonymous=True)
-
         rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.callback)
         rospy.Subscriber("compute_fit", Bool, self.compute_fit)
         rospy.Subscriber("video_name", String, self.set_training)
         rospy.Subscriber("classification_data", file_input, self.add_data)
-        rospy.Subscriber("reset_index", Bool, self.reset_index)
+        rospy.Subscriber("load_existing_model", String, self.load_existing_model)
+        # Classifications of frames of different videos
         self.classifications = {}
-        self.live = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0]
 
-        self.wave = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                            1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,0,0,0,0]
-
-        self.w = [0,0,1,1,1,1,1,0,0,1,0,0,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0]
-
-        self.wavy = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0 ]
         # In this example I set the value of gamma manually. It is possible to automatically find good values for the
         # parameters by using tools such as grid search and cross validation. MAYBE DO THIS?? ASK GERRY
+
+        # Variable to point to the dictionary key of the current training video
         self.current_training = None
-        self.model = svm.SVC(verbose=True)
+        # classification model (support vector machine)
+        self.model = svm.SVC(C=1, cache_size=200, gamma=0.01, kernel='linear', max_iter=-1, verbose=True)
         # kernel='linear', C=1, gamma=1,
+        # Counter
         self.index = 0
+        # Array for training data (optic flow vectors)
         self.X = []
+        # Array for classifiers (1s or 0s)
         self.Y = []
+        # set up publisher to publish model to classifier node
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
 
+
+    # Method to add the optic flow vectors to X and the related classifications to Y
     def callback(self, data):
+        # used for testing
         rospy.loginfo(rospy.get_caller_id() + "I heard %s %s", data.width, data.height)
  
         X = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
         
-        tempX = []
+        tempX = [] # array for X (maybe rename)
+        # iterate through each optic_flow vector from the image
         for i in range(len(X)):
-            temp = X[i].flow_vectors
-            coords = temp[0].coordinates
-            coords2 = temp[1].coordinates
+            temp = X[i].flow_vectors        # access the vectors in each index of parameteres array
+            coords = temp[0].coordinates    # get x vector ??
+            coords2 = temp[1].coordinates   # get y vector ??
 
-            tempX.append([coords[0], coords[1], coords2[0], coords2[1]])
+            tempX.append([coords[0], coords[1], coords2[0], coords2[1]]) # Append whiiiit?
 
+        # access the correct classification for that frame
         y = self.classifications[self.current_training][self.index]
-        print self.index
-        print y
+        print self.index # testing
+        print y # testing
         if y == 1:
             Y = np.ones(len(tempX))
         else:
             Y = np.zeros(len(tempX))
 
-        print Y
-        #self.model.fit(tempX, Y)
-        #self.model.score(X, self.training[self.frame])
-        self.X.extend(tempX)
-        self.Y.extend(Y)
-        self.index += 1
+        print Y # testing
 
+        self.X.extend(tempX)    # add new training data
+        self.Y.extend(Y)        # add new classifications
+        self.index += 1         # increment index of classification
+
+    # Method called when latches to the boolean topic compute_fit
+    # Fits model to data and then pickles it and publishes it
+    # and writes the model to a file
     def compute_fit(self, data):
         print len(self.X)
         print len(self.Y)
         print "ENTERED COMPUTE FIT"
         self.model.fit(self.X, self.Y)
-        print "X"
         self.model.score(self.X, self.Y)
-        print "Y"
         # maybe use cPickle as its 1000 times faster
         s = p.dumps(self.model)
-        print "Z"
         msg = svm_model()
-        print "A"
         msg.pickles = s
-        print "B"
         self.pub.publish(msg)
         print "PUBLISHING"
 
+        model_file = open("model_file", "w") # should this be hardcoded? maybe instance variable
+        model_file.write(s)
+        model_file.close()
+
+    # Method called when subscribes to topic that sets the current_training to the correct
+    # name and resets the index
     def set_training(self, data):
         self.current_training = data.data
         self.index = 0
 
+    # Method called when file_reader node publishes that stores the classifications
+    # for different video frames
     def add_data(self, data):
         print "Entered"
         self.classifications[data.name] = list(data.classifiers)
         print self.classifications[data.name]
 
-    def reset_index(self, data):
-        self.index = 0
+    # NOT ABLE TO FIND FILE, VERY ANNOYING BUG
+    def load_existing_model(self, data):
+        try:
+            with open(data.data, "r") as f:
+                m = f.read()
+                self.model = p.loads(m)
+        except IOError:
+            print "The file " + data.data + " does not exist"
+        """
+        f = open(data.data, "r")
+        if not os.stat(data.data).st_size == 0:
+            m = f.read()
+            self.model = p.loads(m)
+            """
+        print self.model
 
 if __name__ == '__main__':
      try:

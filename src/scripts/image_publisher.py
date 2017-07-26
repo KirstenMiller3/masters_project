@@ -26,7 +26,7 @@ def image_publisher():
     # If user doesn't enter the video input print error message
     if len(sys.argv) < 2:
         print "You must give an argument to open a video stream."
-        print "  It can be a number as video device, e.g.: 0 would be /dev/video0"
+        print "  It can be a number as video device, e.g.: 0"
         print "  It can be a url of a stream,        e.g.: rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
         print "  It can be a video file,             e.g.: robotvideo.mkv"
         exit(0)

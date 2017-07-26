@@ -5,6 +5,7 @@ from std_msgs.msg import Bool
 import pickle as p
 from sklearn import metrics, svm
 from sklearn.model_selection import GridSearchCV
+import os
 
 class Classifier:
 
@@ -16,12 +17,17 @@ class Classifier:
 
 
 
+
         self.model = None
         self.X = []
         self.prediction = None
         self.blerg = [0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,0]
         self.w = [0,0,0,1,1,1,1,1,1,0,0,0,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0]
-
+        file = open("prediction_file.txt", "w")
+        file = open("prediction_file.txt", "r")
+        if not os.stat("prediction_file.txt").st_size == 0:
+            m = file.read()
+            self.model = p.loads(m)
 
     def callback(self, data):
         print "I AM ALIVE"
@@ -56,17 +62,18 @@ class Classifier:
         print(grid)
         print(grid.best_score_)
         print(grid.best_estimator_)
-        print metrics.accuracy_score(self.prediction, self.w)
-
-
-
-
-
+        # getting number of samples error so clearly my if elses aren't working as expected
+       # print metrics.accuracy_score(self.prediction, self.w)
 
         file = open("prediction_file", "w")
         for x in self.prediction:
             file.write(str(x) + ",")
         file.close()
+
+        model_file = open("model_file", "w")
+        model = p.dumps(self.model)
+        model_file.write(model)
+        model_file.close()
 
 
 if __name__ == '__main__':
