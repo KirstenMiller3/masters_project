@@ -11,13 +11,14 @@
 # INSTEAD OF DOING MACHINE LEARNING THIS NODE IS MORE DOING PICKLING OF VIDEOS AND TRAINING SETS AND THEN
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit
 from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input
 from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
 import pickle as p
-import os
-import time
+import traceback
+
 
 
 '''
@@ -28,7 +29,7 @@ class Machine_learning:
     def __init__(self):
         # IS THIS A RIDICULOUS NUMBER OF SUBSCRIBERS?? BAD DESIGN???
         # also don't have topic and method names the same it's confusing
-        rospy.init_node('machine_learning', anonymous=True)
+        rospy.init_node('machine_learning', anonymous=True, disable_signals=True)
         rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.callback)
         rospy.Subscriber("compute_fit", Bool, self.compute_fit)
         rospy.Subscriber("video_name", String, self.set_training)
@@ -42,9 +43,8 @@ class Machine_learning:
 
         # Variable to point to the dictionary key of the current training video
         self.current_training = None
-        # classification model (support vector machine)
+        # classification model (support vector machine)    maybe use parameter server to set the model
         self.model = svm.SVC(C=1, cache_size=200, gamma=0.01, kernel='linear', max_iter=-1, verbose=True)
-        # kernel='linear', C=1, gamma=1,
         # Counter
         self.index = 0
         # Array for training data (optic flow vectors)
@@ -53,6 +53,10 @@ class Machine_learning:
         self.Y = []
         # set up publisher to publish model to classifier node
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
+        # Filenames for output files
+        self.x_pickle_filename = "x_pickle.txt"
+        self.y_pickle_filename = "y_pickle.txt"
+        self.model_filename = "model.txt"
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
@@ -65,14 +69,19 @@ class Machine_learning:
         tempX = [] # array for X (maybe rename)
         # iterate through each optic_flow vector from the image
         for i in range(len(X)):
-            temp = X[i].flow_vectors        # access the vectors in each index of parameteres array
+            temp = X[i].flow_vectors        # access the vectors in each index of parameters array
             coords = temp[0].coordinates    # get x vector ??
             coords2 = temp[1].coordinates   # get y vector ??
 
             tempX.append([coords[0], coords[1], coords2[0], coords2[1]]) # Append whiiiit?
 
+        # error checking
+        if self.current_training not in self.classifications:
+            self.shutdown("Error: Classifications for video have not been passed to node")
         # access the correct classification for that frame
         y = self.classifications[self.current_training][self.index]
+
+
         print self.index # testing
         print y # testing
         if y == 1:
@@ -90,19 +99,35 @@ class Machine_learning:
     # Fits model to data and then pickles it and publishes it
     # and writes the model to a file
     def compute_fit(self, data):
+        #self.training()
+        if self.X is None or self.Y is None or len(self.X) is not len(self.Y):
+            self.shutdown("Error: no X or Y data to train model on")
+
+        pickleX = p.dumps(self.X)
+        pickleY = p.dumps(self.Y)
+
+        x_file = open(self.x_pickle_filename, "w")
+        x_file.write(pickleX)
+        x_file.close()
+
+        y_file = open(self.y_pickle_filename, "w")
+        y_file.write(pickleY)
+        y_file.close()
         print len(self.X)
         print len(self.Y)
         print "ENTERED COMPUTE FIT"
+
+        # are we still doing the fit and score here??
         self.model.fit(self.X, self.Y)
         self.model.score(self.X, self.Y)
-        # maybe use cPickle as its 1000 times faster
+
         s = p.dumps(self.model)
         msg = svm_model()
         msg.pickles = s
         self.pub.publish(msg)
         print "PUBLISHING"
 
-        model_file = open("model_file", "w") # should this be hardcoded? maybe instance variable
+        model_file = open(self.model_filename, "w")  # should this be hardcoded? maybe instance variable
         model_file.write(s)
         model_file.close()
 
@@ -119,7 +144,7 @@ class Machine_learning:
         self.classifications[data.name] = list(data.classifiers)
         print self.classifications[data.name]
 
-    # NOT ABLE TO FIND FILE, VERY ANNOYING BUG
+    #
     def load_existing_model(self, data):
         try:
             with open(data.data, "r") as f:
@@ -127,17 +152,37 @@ class Machine_learning:
                 self.model = p.loads(m)
         except IOError:
             print "The file " + data.data + " does not exist"
-        """
-        f = open(data.data, "r")
-        if not os.stat(data.data).st_size == 0:
-            m = f.read()
-            self.model = p.loads(m)
-            """
+            self.shutdown("Shutting down node")
+        except p.UnpicklingError as e:
+            print "Not able to unpickle file "+ data.data
+            self.shutdown("Shutting down node")
+        except Exception as e:
+            print(traceback.format_exc(e))
+            self.shutdown("Shutting down node")
+
         print self.model
+
+
+    # had to get rid of this and do it in python script as the threading in ROS nodes was slowing it down
+    def training(self):
+        C_range = np.logspace(-2, 10, 13)
+        gamma_range = np.logspace(-9, 3, 13)
+        param_grid = dict(gamma=gamma_range, C=C_range)
+        cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
+        grid = GridSearchCV(svm.SVC(), param_grid=param_grid, cv=cv)
+        grid.fit(self.X, self.Y)
+
+        print("The best parameters are %s with a score of %0.2f"
+              % (grid.best_params_, grid.best_score_))
+
+    def shutdown(self, message):
+        print message
+        rospy.signal_shutdown(message)
 
 if __name__ == '__main__':
      try:
         ml = Machine_learning()
-        rospy.spin()
+        while not rospy.is_shutdown():
+            rospy.spin()
      except rospy.ROSInterruptException:
         print 'Shutting down'

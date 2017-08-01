@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from masters_project.msg import svm_model, flow_vectors_list
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 import pickle as p
 from sklearn import metrics, svm
 from sklearn.model_selection import GridSearchCV
@@ -14,27 +14,33 @@ class Classifier:
 
         rospy.Subscriber("svm_model", svm_model, self.callback)
         rospy.Subscriber("time_to_classify", Bool, self.classify)
+        rospy.Subscriber("load_existing_model", String, self.load_existing_model)
+        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.helper)
 
+        self.model = None  # Stores the model for classification
+        self.X = []  # Array to store new X values for predictions
+        self.prediction = None  # Stores the prediction of the model
 
-
-
-        self.model = None
-        self.X = []
-        self.prediction = None
-        self.blerg = [0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,0]
-        self.w = [0,0,0,1,1,1,1,1,1,0,0,0,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0]
+        """
         file = open("prediction_file.txt", "w")
         file = open("prediction_file.txt", "r")
         if not os.stat("prediction_file.txt").st_size == 0:
             m = file.read()
             self.model = p.loads(m)
+            print "model loaded"
+            """
 
+    # Method that is called whenever the node receives and svm_model message from the __ topic
     def callback(self, data):
-        print "I AM ALIVE"
-        self.model = p.loads(data.pickles)
-        print self.model
-        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.helper)
+        print "entered callback"
+        try:
+            self.model = p.loads(data.pickles)  # unpickle the model
+            print self.model
+            print "model received and set"
+        except p.UnpicklingError:
+            print "Not able to unpickle data"
 
+    # Receives the optic flow vectors from the __ topic and adds them to X
     def helper(self, data):
         temp = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
         print "HELPING"
@@ -45,6 +51,7 @@ class Classifier:
 
             self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
 
+    # Maybe make this run the python script if that would avoid threading issues
     def classify(self, data):
         print "CLASSIFY"
         self.prediction = self.model.predict(self.X)
@@ -63,7 +70,7 @@ class Classifier:
         print(grid.best_score_)
         print(grid.best_estimator_)
         # getting number of samples error so clearly my if elses aren't working as expected
-       # print metrics.accuracy_score(self.prediction, self.w)
+        # print metrics.accuracy_score(self.prediction, self.w)
 
         file = open("prediction_file", "w")
         for x in self.prediction:
@@ -74,6 +81,22 @@ class Classifier:
         model = p.dumps(self.model)
         model_file.write(model)
         model_file.close()
+
+    # method so that user can set the model params with custom message
+    def set_model_params(self, data):
+        self.model = svm.SVC()
+
+    def load_existing_model(self, data):
+        try:
+            with open(data.data, "r") as f:
+                m = f.read()
+                self.model = p.loads(m)
+        except IOError:
+            print "The file " + data.data + " does not exist"
+
+        print self.model
+        self.model.set_params(C=1000) # don't think this is relevant anymore
+        print "model overwritten"
 
 
 if __name__ == '__main__':

@@ -2,56 +2,27 @@
 
 import rospy
 from sensor_msgs.msg import Image
-from std_msgs.msg import Int8MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import cv2
-
-import sys
 from masters_project.msg import flow_vectors, flow_vectors_list, coordinate
 
 
-class Optic_Flow:
+class OpticFlow:
     def __init__(self):
 
+        # create CvBridge object to use functionality to convert between ROS and OpenCV images
         self.bridge = CvBridge()
         self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors_list, queue_size=100)
+        self.cv_image = None  # stores the image in openCV format
+        self.once = True  # Boolean to make sure conditions are entered or not entered on first execution (think this is whack code)
+        self.prevgray_initialised = False  # Boolean to check conditions also
+        self.prevgray = None  # stores previous grayscale image for optic flow
 
-
-        self.show_hsv = False
-        self.cv_image = None
-        self.once = True
-        self.blerg = False
-        self.prevgray = None
-        self.count = 0
-
-        # rospy.Rate(20)
         rospy.init_node('optic_flow', anonymous=True)
 
         rospy.Subscriber('camera_image', Image, self.callback)
-        # rate = rospy.Rate(5)
-        # while self.cv_image != None:
 
-        #     ret, prev = self.cv_image
-        #     prevgray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
-        #     show_hsv = False
-        #     ret, img = self.cv_image
-        #     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        #     flow = cv2.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-        #     prevgray = gray
-
-        #     cv2.imshow('flow', self.draw_flow(gray, flow))
-        #     if show_hsv:
-        #         cv2.imshow('flow HSV', self.draw_hsv(flow))
-
-        #     ch = cv2.waitKey(5)
-        #     if ch == 27:
-        #         break
-        #     if ch == ord('1'):
-        #         show_hsv = not show_hsv
-        #         print('HSV flow visualization is', ['off', 'on'][show_hsv])
-
-        # cv2.destroyAllWindows()
 
     # This method is called whenever the node receives a msg
     # from its subscriber
@@ -59,25 +30,19 @@ class Optic_Flow:
         try:
             # Print out image height and width for testing
             height = ros_image.height
-            print height
             width = ros_image.width
-            print width
+            print height, width
             # convert ros image back to cv format to compute optical flow
             self.cv_image = self.bridge.imgmsg_to_cv2(ros_image, desired_encoding="passthrough")
-
-            # Also for doing classification by hand
-            # cv2.imwrite(str(self.count)+".png", self.cv_image) # testing to make sure no frames are published twice.
-            # Get around the right number of frames but it varies a bit so most be sending some repeats! Maybe to do
-            # with rospy.rate
-            self.count += 1
-            # For the first image we receive convert it to gray and set it as prev so that we can compute optical flow from next image and prev one
+            # For the first image we receive convert it to gray and set it as prev so that we can compute optical
+            #  flow from next image and prev one
             if self.cv_image is not None and self.once:
                 self.prevgray = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2GRAY)
-                self.blerg = True
+                self.prevgray_initialised = True
 
             # Check node has received image so doesn't do computation too early/don't enter this loop when we only have
             # one image as can't compute flow
-            if self.cv_image is not None and not self.once and self.blerg:
+            if self.cv_image is not None and not self.once and self.prevgray_initialised:
 
                 # Get the next image and convert it to grayscale
                 gray = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2GRAY)
@@ -85,11 +50,17 @@ class Optic_Flow:
                 # Computes a dense optical flow using the Gunnar Farneback's algorithm
                 # returns a 2-channel image with X and Y magnitudes and orientation
                 flow = cv2.calcOpticalFlowFarneback(self.prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-                # Set current image to previous
+                # Set prevgray to current image
                 self.prevgray = gray
-                #fx, fy = flow[:, :, 0], flow[:, :, 1]
-                step = 16
+                # Display image with optical flow vectors
+                #cv2.imshow('flow', self.draw_flow(gray, flow))
+                # Display image with HSV flow??
+                #cv2.imshow("flow HSV", self.draw_hsv(flow))
+                # necessary for imshow - WHY 5???
+                #ch = cv2.waitKey(5)
 
+                # bit that computes the optic flow lines - repeated in other method - improve so don't have duplicate code
+                step = 16
                 h, w = self.cv_image.shape[:2]
                 y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
                 fx, fy = flow[y, x].T
@@ -99,7 +70,6 @@ class Optic_Flow:
                 print "!!!!" + str(len(lines)) + " " + str(len(lines[0])) + " " + str(len(lines[0][0]))
 
                 print lines
-                #print "!!!!!rows" + str(len(fx)) + "columns" + str(len(fx[0]))
                 start_points = coordinate()
                 end_points = coordinate()
                 temp = flow_vectors()
@@ -130,9 +100,10 @@ class Optic_Flow:
                 self.pub.publish(msg)
             # make sure loop is only entered once    
             self.once = False
-            
         except CvBridgeError as e:
             print(e)
+
+# https://github.com/opencv/opencv/blob/master/samples/python/opt_flow.py
 
     def draw_flow(self, img, flow, step=16):
         h, w = img.shape[:2]
@@ -171,7 +142,7 @@ class Optic_Flow:
 
 if __name__ == '__main__':
     try:
-        flowObj = Optic_Flow()
+        flowObj = OpticFlow()
         rospy.spin()
     except rospy.ROSInterruptException:
         print 'Shutting down'

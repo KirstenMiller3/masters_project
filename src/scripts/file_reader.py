@@ -7,7 +7,7 @@ from masters_project.msg import file_input
 
 
 def file_reader():
-    rospy.init_node('file_reader', anonymous=True)
+    rospy.init_node('file_reader', anonymous=True, disable_signals=True)
     pub = rospy.Publisher("classification_data", file_input, queue_size=3)
 
     # If user doesn't enter a filename print error message
@@ -16,6 +16,7 @@ def file_reader():
         exit(0)
 
 
+# NEED TO HAVE BETTER
     # read in the input from the file and store it as a file_input message
     resource = sys.argv[1]
     msg = file_input()
@@ -29,6 +30,8 @@ def file_reader():
                         count += 1
     except IOError:
         print "The file " + resource + " does not exist"
+        rospy.signal_shutdown("shutting down")
+
 
     msg.name = resource[:-4]
 
