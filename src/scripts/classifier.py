@@ -56,6 +56,7 @@ class Classifier:
         print "CLASSIFY"
         self.prediction = self.model.predict(self.X)
         print self.prediction
+        """
         parameters = {'kernel': ('linear', 'rbf'), 'C': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'gamma':
             [0.01, 0.02, 0.03, 0.04, 0.05, 0.10, 0.2, 0.3, 0.4, 0.5]}
         m = svm.SVC()
@@ -69,6 +70,7 @@ class Classifier:
         print(grid)
         print(grid.best_score_)
         print(grid.best_estimator_)
+        """
         # getting number of samples error so clearly my if elses aren't working as expected
         # print metrics.accuracy_score(self.prediction, self.w)
 

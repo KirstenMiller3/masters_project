@@ -35,6 +35,10 @@ class Machine_learning:
         rospy.Subscriber("video_name", String, self.set_training)
         rospy.Subscriber("classification_data", file_input, self.add_data)
         rospy.Subscriber("load_existing_model", String, self.load_existing_model)
+        rospy.Subscriber("load_training_data", Bool, self.load_training_data)
+        rospy.Subscriber("pickle_training_data", Bool, self.pickle_training_data)
+
+
         # Classifications of frames of different videos
         self.classifications = {}
 
@@ -44,7 +48,7 @@ class Machine_learning:
         # Variable to point to the dictionary key of the current training video
         self.current_training = None
         # classification model (support vector machine)    maybe use parameter server to set the model
-        self.model = svm.SVC(C=1, cache_size=200, gamma=0.01, kernel='linear', max_iter=-1, verbose=True)
+        self.model = svm.SVC(C=1000,  gamma=1, kernel='linear', verbose=True)
         # Counter
         self.index = 0
         # Array for training data (optic flow vectors)
@@ -54,9 +58,9 @@ class Machine_learning:
         # set up publisher to publish model to classifier node
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
         # Filenames for output files
-        self.x_pickle_filename = "x_pickle.txt"
-        self.y_pickle_filename = "y_pickle.txt"
-        self.model_filename = "model.txt"
+        self.x_pickle_filename = 'x_pickle.txt'
+        self.y_pickle_filename = 'y_pickle.txt'
+        self.model_filename = 'model.txt'
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
@@ -100,9 +104,10 @@ class Machine_learning:
     # and writes the model to a file
     def compute_fit(self, data):
         #self.training()
-        if self.X is None or self.Y is None or len(self.X) is not len(self.Y):
+        if self.X == [] or self.Y == []: # or len(self.X) is not len(self.Y)
             self.shutdown("Error: no X or Y data to train model on")
 
+        """
         pickleX = p.dumps(self.X)
         pickleY = p.dumps(self.Y)
 
@@ -113,6 +118,8 @@ class Machine_learning:
         y_file = open(self.y_pickle_filename, "w")
         y_file.write(pickleY)
         y_file.close()
+        """
+
         print len(self.X)
         print len(self.Y)
         print "ENTERED COMPUTE FIT"
@@ -178,6 +185,37 @@ class Machine_learning:
     def shutdown(self, message):
         print message
         rospy.signal_shutdown(message)
+
+
+    def pickle_training_data(self, data):
+        pickleX = p.dumps(self.X)
+        pickleY = p.dumps(self.Y)
+
+        x_file = open(rospy.get_param('~xfile'), "w")
+        x_file.write(pickleX)
+        x_file.close()
+
+        y_file = open(rospy.get_param('~yfile'), "w")
+        y_file.write(pickleY)
+        y_file.close()
+
+    def load_training_data(self, data):
+        print "loading..."
+        try:
+            x_file = open(self.x_pickle_filename, "r")
+            x = x_file.read()
+            xp = p.loads(x)
+            self.X = xp
+            print self.X
+            y_file = open(self.y_pickle_filename, "r")
+            y = y_file.read()
+            self.Y = p.loads(y)
+            print self.Y
+        except IOError as e:
+            print e
+
+
+
 
 if __name__ == '__main__':
      try:

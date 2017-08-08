@@ -2,6 +2,8 @@ rostopic pub -l /compute_fit std_msgs/Bool "data: true"
 
 rostopic pub /time_to_classify std_msgs/Bool "data: true"
 
+rostopic pub /load_training_data std_msgs/Bool "data: true"
+
 rostopic pub /load_existing_model std_msgs/String "model_after_all_vids"
 
 
