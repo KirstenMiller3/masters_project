@@ -10,7 +10,7 @@
 
 # INSTEAD OF DOING MACHINE LEARNING THIS NODE IS MORE DOING PICKLING OF VIDEOS AND TRAINING SETS AND THEN
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
-from sklearn import svm
+from sklearn import svm, preprocessing
 from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit
 from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input
 from std_msgs.msg import Bool, String
@@ -48,7 +48,7 @@ class Machine_learning:
         # Variable to point to the dictionary key of the current training video
         self.current_training = None
         # classification model (support vector machine)    maybe use parameter server to set the model
-        self.model = svm.SVC(C=1000,  gamma=1, kernel='linear', verbose=True)
+        self.model = svm.SVC(C=1,  gamma=1, kernel='linear', verbose=True, cache_size=1000)
         # Counter
         self.index = 0
         # Array for training data (optic flow vectors)
@@ -69,15 +69,19 @@ class Machine_learning:
         rospy.loginfo(rospy.get_caller_id() + "I heard %s %s", data.width, data.height)
  
         X = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
-        
-        tempX = [] # array for X (maybe rename)
+        print len(X)
+        tempX = []
         # iterate through each optic_flow vector from the image
         for i in range(len(X)):
             temp = X[i].flow_vectors        # access the vectors in each index of parameters array
-            coords = temp[0].coordinates    # get x vector ??
-            coords2 = temp[1].coordinates   # get y vector ??
+            xflow = temp[0]    # get x vector ??
+            yflow = temp[1]   # get y vector ??
 
-            tempX.append([coords[0], coords[1], coords2[0], coords2[1]]) # Append whiiiit?
+            flows = [xflow, yflow]
+            tempX.append(flows) # Append whiiiit?
+
+
+
 
         # error checking
         if self.current_training not in self.classifications:
@@ -119,18 +123,23 @@ class Machine_learning:
         y_file.write(pickleY)
         y_file.close()
         """
-
         print len(self.X)
-        print len(self.Y)
-        print "ENTERED COMPUTE FIT"
+        print len(self.X[0])
 
+        print len(self.Y)
+
+
+        print "ENTERED COMPUTE FIT"
+        #scaler = preprocessing.StandardScaler().fit(self.X)
+        #X_scaled = scaler.transform(self.X)
         # are we still doing the fit and score here??
         self.model.fit(self.X, self.Y)
-        self.model.score(self.X, self.Y)
+        #self.model.score(self.X, self.Y)
 
         s = p.dumps(self.model)
         msg = svm_model()
         msg.pickles = s
+        #msg.scaler = scaler
         self.pub.publish(msg)
         print "PUBLISHING"
 
@@ -186,16 +195,18 @@ class Machine_learning:
         print message
         rospy.signal_shutdown(message)
 
-
     def pickle_training_data(self, data):
+        print "Entered pickling"
         pickleX = p.dumps(self.X)
         pickleY = p.dumps(self.Y)
 
-        x_file = open(rospy.get_param('~xfile'), "w")
+        #x_file = open(rospy.get_param('~xfile'), "w")
+        x_file = open("x_pickle.txt", "w")
         x_file.write(pickleX)
         x_file.close()
 
-        y_file = open(rospy.get_param('~yfile'), "w")
+        #y_file = open(rospy.get_param('~yfile'), "w")
+        y_file = open("y_pickle.txt", "w")
         y_file.write(pickleY)
         y_file.close()
 
@@ -213,8 +224,6 @@ class Machine_learning:
             print self.Y
         except IOError as e:
             print e
-
-
 
 
 if __name__ == '__main__':

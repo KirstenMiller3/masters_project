@@ -19,22 +19,21 @@ class Classifier:
 
         self.model = None  # Stores the model for classification
         self.X = []  # Array to store new X values for predictions
-        self.prediction = None  # Stores the prediction of the model
+        self.prediction = []
+        self.scaler = 0
 
-        """
-        file = open("prediction_file.txt", "w")
-        file = open("prediction_file.txt", "r")
-        if not os.stat("prediction_file.txt").st_size == 0:
-            m = file.read()
-            self.model = p.loads(m)
-            print "model loaded"
-            """
+        f = open("gerry_model.txt", "r")
+        m = f.read()
+        self.model = p.loads(m)
+        print "model loaded"
+
 
     # Method that is called whenever the node receives and svm_model message from the __ topic
     def callback(self, data):
         print "entered callback"
         try:
             self.model = p.loads(data.pickles)  # unpickle the model
+            self.scaler = data.scaler
             print self.model
             print "model received and set"
         except p.UnpicklingError:
@@ -48,12 +47,21 @@ class Classifier:
             x = temp[i].flow_vectors
             coords = x[0].coordinates
             coords2 = x[1].coordinates
+            test = [[coords[0], coords[1], coords2[0], coords2[1]]]
+            prediction = self.model.predict(test)
+            print prediction
+            self.prediction.append(prediction)
 
-            self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
+            file = open("prediction_file", "a")
+            for x in prediction:
+                file.write(str(x) + ",")
+            file.close()
+           # self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
 
     # Maybe make this run the python script if that would avoid threading issues
     def classify(self, data):
         print "CLASSIFY"
+        scaled_x =
         self.prediction = self.model.predict(self.X)
         print self.prediction
         """

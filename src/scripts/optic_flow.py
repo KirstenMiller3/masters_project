@@ -49,6 +49,8 @@ class OpticFlow:
                 # Computes a dense optical flow using the Gunnar Farneback's algorithm
                 # returns a 2-channel image with X and Y magnitudes and orientation
                 flow = cv2.calcOpticalFlowFarneback(self.prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+                f, g, h = flow.shape
+                print "Y is " + str(f) + " X is " + str(g) + " Z is " + str(h)
                 # Set prevgray to current image
                 self.prevgray = gray
                 # Display image with optical flow vectors
@@ -66,12 +68,12 @@ class OpticFlow:
                 lines = np.vstack([x, y, x + fx, y + fy]).T.reshape(-1, 2, 2)
                 lines = np.int32(lines + 0.5)
 
-                print "!!!!" + str(len(lines)) + " " + str(len(lines[0])) + " " + str(len(lines[0][0]))
 
-                print lines
+
+
+
                 start_points = coordinate()
                 end_points = coordinate()
-                temp = flow_vectors()
                 msg = flow_vectors_list()
 
                 """
@@ -82,6 +84,16 @@ class OpticFlow:
                     msg.parameters += [temp]
                 """
 
+                flow = self.sub_sample_flow_vectors(flow, 3)
+                print flow
+                for i in range(len(flow)):
+                        temp = flow_vectors()
+                        temp.flow_vectors[0] = flow[i][0]
+                        temp.flow_vectors[1] = flow[i][1]
+                        print temp
+                        msg.parameters += [temp]
+
+                """
                 for i in range(len(lines)):
                     start_points.coordinates[0] = lines[i][0][0]
                     start_points.coordinates[1] = lines[i][0][1]
@@ -90,7 +102,7 @@ class OpticFlow:
                     temp.flow_vectors[0] = start_points
                     temp.flow_vectors[1] = end_points
                     msg.parameters += [temp]
-
+                """
                 # Don't think I need these anymore this was when I thought I had to reassemble list into image shape
                 msg.height = height # when printing out height in machine learning node it is 0 WHY?????
                 msg.width = width # width is 640 ~160
@@ -132,7 +144,7 @@ class OpticFlow:
     def draw_hsv(self, flow):
         # h = number of rows of pixels in img, w = no of columns of pixels
         h, w = flow.shape[:2]
-        # fx =  a w x h view for the red pixel, fy = w x h view for green pixels (bit suspic about this)
+        # fx = w x h view for the red pixels, fy = w x h view for green pixels (bit suspic about this)
         fx, fy = flow[:, :, 0], flow[:, :, 1]
 
         ang = np.arctan2(fy, fx) + np.pi
@@ -144,15 +156,22 @@ class OpticFlow:
         bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         return bgr
 
-    """
-    Helper method to iterate over the xflow and yflow matrices at once
-    """
-    def matrix_iterator(self, x_matrix, y_matrix):
-        for i in range(len(x_matrix)):
-            for j in range(len(x_matrix[i])):
-                yield(x_matrix[i][j], y_matrix[i][j])
+    def sub_sample_flow_vectors(self, flow, step):
+        sample = []
+        for i in range(0, len(flow)[:-step], step):
+            for j in range(0, len(flow[i])-step, step):
+                sumX = 0
+                sumY = 0
+                for s in range(step):
+                    for t in range(step):
+                        sumX += flow[i+s][j+t][0]
+                        sumY += flow[i+s][j+t][1]
 
+                averageX = sumX / step*step
+                averageY = sumY / step*step
+                sample += [[averageX, averageY]]
 
+        return sample
 
 
 if __name__ == '__main__':
