@@ -12,7 +12,7 @@
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
 from sklearn import svm, preprocessing
 from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit
-from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input, scaling, list
+from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input, scaling
 from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
@@ -30,7 +30,7 @@ class Machine_learning:
         # IS THIS A RIDICULOUS NUMBER OF SUBSCRIBERS?? BAD DESIGN???
         # also don't have topic and method names the same it's confusing
         rospy.init_node('machine_learning', anonymous=True, disable_signals=True)
-        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.callback)
+        rospy.Subscriber("optic_flow_parameters", flow_vectors, self.callback)
         rospy.Subscriber("compute_fit", Bool, self.compute_fit)
         rospy.Subscriber("video_name", String, self.set_training)
         rospy.Subscriber("classification_data", file_input, self.add_data)
@@ -61,47 +61,36 @@ class Machine_learning:
         # Filenames for output files
         self.x_pickle_filename = 'x_pickle.txt'
         self.y_pickle_filename = 'y_pickle.txt'
-        self.model_filename = 'scaled_model.txt'
+        self.model_filename = 'new_scaled_model.txt'
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
     def callback(self, data):
         # used for testing
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s %s", data.width, data.height)
+        #rospy.loginfo(rospy.get_caller_id() + "I heard %s %s", data.width, data.height)
  
-        X = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
+        X = list(data.flow_vectors)  # this has list of x and y flow vectors stored as flow_vector objects
         print len(X)
-        tempX = []
-        # iterate through each optic_flow vector from the image
-        for i in range(len(X)):
-            temp = X[i].flow_vectors        # access the vectors in each index of parameters array
-            xflow = temp[0]    # get x vector ??
-            yflow = temp[1]   # get y vector ??
-
-            flows = [xflow, yflow]
-            tempX.append(flows) # Append whiiiit?
-
-
-
-
+        print X
         # error checking
         if self.current_training not in self.classifications:
             self.shutdown("Error: Classifications for video have not been passed to node")
         # access the correct classification for that frame
         y = self.classifications[self.current_training][self.index]
-
+        print y
 
         print self.index # testing
         print y # testing
         if y == 1:
-            Y = np.ones(len(tempX))
+            #Y = np.ones(len(X))
+            Y = 1
         else:
-            Y = np.zeros(len(tempX))
-
+            #Y = np.zeros(len(X))
+            Y = 0
         print Y # testing
 
-        self.X.extend(tempX)    # add new training data
-        self.Y.extend(Y)        # add new classifications
+        self.X.append(X)    # add new training data
+        self.Y.extend([Y])        # add new classifications
         self.index += 1         # increment index of classification
 
     # Method called when latches to the boolean topic compute_fit
@@ -130,14 +119,15 @@ class Machine_learning:
 
         #flow_vectors_x = list()
        # flow_vectors_x.stuff = self.X
-        scaler = preprocessing.StandardScaler().fit(self.X)
-        x = scaler.transform(self.X)
+        #scaler = preprocessing.StandardScaler().fit(self.X)
+        #x = scaler.transform(self.X)
 
         print "ENTERED COMPUTE FIT"
         #scaler = preprocessing.StandardScaler().fit(self.X)
         #X_scaled = scaler.transform(self.X)
         # are we still doing the fit and score here??
-        self.model.fit(x, self.Y)
+       # y =self.Y[:, np.newaxis]
+        self.model.fit(self.X, self.Y)
         #self.model.score(self.X, self.Y)
 
         s = p.dumps(self.model)
@@ -154,6 +144,7 @@ class Machine_learning:
     # Method called when subscribes to topic that sets the current_training to the correct
     # name and resets the index
     def set_training(self, data):
+        print "!!!!!!!!!CURRENT TRAINING SELECTED!!!!!!"
         self.current_training = data.data
         self.index = 0
 
@@ -243,6 +234,8 @@ class Machine_learning:
             print self.Y
         except IOError as e:
             print e
+
+
 if __name__ == '__main__':
      try:
         ml = Machine_learning()

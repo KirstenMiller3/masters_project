@@ -5,7 +5,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import cv2
-from masters_project.msg import flow_vectors, flow_vectors_list, coordinate
+from masters_project.msg import flow_vectors
 
 
 class OpticFlow:
@@ -13,7 +13,7 @@ class OpticFlow:
 
         # create CvBridge object to use functionality to convert between ROS and OpenCV images
         self.bridge = CvBridge()
-        self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors_list, queue_size=100)
+        self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors, queue_size=100)
         self.cv_image = None  # stores the image in openCV format
         self.once = True  # Boolean to make sure conditions are entered or not entered on first execution (think this is whack code)
         self.prevgray_initialised = False  # Boolean to check conditions also
@@ -61,51 +61,22 @@ class OpticFlow:
                 #ch = cv2.waitKey(5)
 
                 # bit that computes the optic flow lines - repeated in other method - improve so don't have duplicate code
-                step = 16
-                h, w = self.cv_image.shape[:2]
-                y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
-                fx, fy = flow[y, x].T
-                lines = np.vstack([x, y, x + fx, y + fy]).T.reshape(-1, 2, 2)
-                lines = np.int32(lines + 0.5)
 
+                msg = flow_vectors()
 
-
-
-
-                start_points = coordinate()
-                end_points = coordinate()
-                msg = flow_vectors_list()
-
-                """
-                # Iterate over flow vector array of image and add each one to the custom message
-                for (x, y) in self.matrix_iterator(fx, fy):
-                    temp.flow_vectors[0] = x
-                    temp.flow_vectors[1] = y
-                    msg.parameters += [temp]
-                """
 
                 flow = self.sub_sample_flow_vectors(flow, 21)
-                print flow
-                for i in range(len(flow)):
-                        temp = flow_vectors()
-                        temp.flow_vectors[0] = flow[i][0]
-                        temp.flow_vectors[1] = flow[i][1]
-                        print temp
-                        msg.parameters += [temp]
+                blerg = np.array(flow)
+                flow = blerg.tolist()
 
-                """
-                for i in range(len(lines)):
-                    start_points.coordinates[0] = lines[i][0][0]
-                    start_points.coordinates[1] = lines[i][0][1]
-                    end_points.coordinates[0] = lines[i][1][0]
-                    end_points.coordinates[1] = lines[i][1][1]
-                    temp.flow_vectors[0] = start_points
-                    temp.flow_vectors[1] = end_points
-                    msg.parameters += [temp]
-                """
+                for i in range(len(flow)):
+                        msg.flow_vectors += flow[i]
+
+
+                print msg.flow_vectors
                 # Don't think I need these anymore this was when I thought I had to reassemble list into image shape
-                msg.height = height # when printing out height in machine learning node it is 0 WHY?????
-                msg.width = width # width is 640 ~160
+                #msg.height = height # when printing out height in machine learning node it is 0 WHY?????
+                #msg.width = width # width is 640 ~160
 
                 # publish flow vectors message
                 self.pub.publish(msg)
@@ -167,8 +138,8 @@ class OpticFlow:
                         sumX += flow[i+s][j+t][0]
                         sumY += flow[i+s][j+t][1]
 
-                averageX = sumX / step*step
-                averageY = sumY / step*step
+                averageX = sumX / (step*step)
+                averageY = sumY / (step*step)
                 sample += [[averageX, averageY]]
 
         return sample

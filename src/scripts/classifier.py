@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import rospy
-from masters_project.msg import svm_model, flow_vectors_list, list
+from masters_project.msg import svm_model, flow_vectors
 from std_msgs.msg import Bool, String
 import pickle as p
+import numpy as np
 from sklearn import metrics, svm, preprocessing
 from sklearn.model_selection import GridSearchCV
 import os
@@ -15,7 +16,7 @@ class Classifier:
         rospy.Subscriber("svm_model", svm_model, self.callback)
         rospy.Subscriber("time_to_classify", Bool, self.classify)
         rospy.Subscriber("load_existing_model", String, self.load_existing_model)
-        rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.helper)
+        rospy.Subscriber("optic_flow_parameters", flow_vectors, self.helper)
         #rospy.Subscriber("to_scale", list, self.scaling)
 
         self.model = None  # Stores the model for classification
@@ -24,12 +25,12 @@ class Classifier:
         self.scaler = 0
         self.training = []
 
-        f = open("IT_WORKED.txt", "r")
+        f = open("new_scaled_model.txt", "r")
         m = f.read()
         self.model = p.loads(m)
         print "model loaded"
-        self.scaling()
-        self.scaler = preprocessing.StandardScaler().fit(self.training)
+       # self.scaling()
+        #self.scaler = preprocessing.StandardScaler().fit(self.training)
 
     def scaling(self):
         print "loading..."
@@ -54,26 +55,17 @@ class Classifier:
 
     # Receives the optic flow vectors from the __ topic and adds them to X
     def helper(self, data):
-        X = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
-        print "HELPING"
-        tempX = []
-        # iterate through each optic_flow vector from the image
-        for i in range(len(X)):
-            temp = X[i].flow_vectors  # access the vectors in each index of parameters array
-            xflow = temp[0]  # get x vector ??
-            yflow = temp[1]  # get y vector ??
+        X = list(data.flow_vectors)
+        #x = self.scaler.transform(tempX)
+        X = np.reshape(X, (1, -1))
+        pred = self.model.predict(X)
+        print pred
+        self.prediction.append(pred)
 
-            flows = [xflow, yflow]
-            tempX.append(flows)  # Append whiiiit?
-            x = self.scaler.transform(tempX)
-            pred = self.model.predict(tempX)
-            print pred
-            self.prediction.append(pred)
-
-            file = open("prediction_file", "a")
-            for x in pred:
-                file.write(str(x) + ",")
-            file.close()
+        file = open("prediction_file", "a")
+        for x in pred:
+            file.write(str(x) + ",")
+        file.close()
            # self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
 
     # Maybe make this run the python script if that would avoid threading issues

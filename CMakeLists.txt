@@ -55,7 +55,6 @@ find_package(catkin REQUIRED COMPONENTS
    svm_model.msg
    file_input.msg
    scaling.msg
-   list.msg
  )
 
 ## Generate services in the 'srv' folder
