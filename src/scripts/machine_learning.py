@@ -12,7 +12,7 @@
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
 from sklearn import svm, preprocessing
 from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit
-from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input
+from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input, scaling, list
 from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
@@ -57,10 +57,11 @@ class Machine_learning:
         self.Y = []
         # set up publisher to publish model to classifier node
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
+       # self.pub2 = rospy.Publisher("to_scale", list, queue_size=5)
         # Filenames for output files
         self.x_pickle_filename = 'x_pickle.txt'
         self.y_pickle_filename = 'y_pickle.txt'
-        self.model_filename = 'model.txt'
+        self.model_filename = 'scaled_model.txt'
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
@@ -125,22 +126,25 @@ class Machine_learning:
         """
         print len(self.X)
         print len(self.X[0])
-
         print len(self.Y)
 
+        #flow_vectors_x = list()
+       # flow_vectors_x.stuff = self.X
+        scaler = preprocessing.StandardScaler().fit(self.X)
+        x = scaler.transform(self.X)
 
         print "ENTERED COMPUTE FIT"
         #scaler = preprocessing.StandardScaler().fit(self.X)
         #X_scaled = scaler.transform(self.X)
         # are we still doing the fit and score here??
-        self.model.fit(self.X, self.Y)
+        self.model.fit(x, self.Y)
         #self.model.score(self.X, self.Y)
 
         s = p.dumps(self.model)
         msg = svm_model()
         msg.pickles = s
-        #msg.scaler = scaler
         self.pub.publish(msg)
+        #self.pub2.publish(flow_vectors_x)
         print "PUBLISHING"
 
         model_file = open(self.model_filename, "w")  # should this be hardcoded? maybe instance variable
@@ -225,7 +229,20 @@ class Machine_learning:
         except IOError as e:
             print e
 
-
+    def load(self):
+        print "loading..."
+        try:
+            x_file = open(self.x_pickle_filename, "r")
+            x = x_file.read()
+            xp = p.loads(x)
+            self.X = xp
+            print self.X
+            y_file = open(self.y_pickle_filename, "r")
+            y = y_file.read()
+            self.Y = p.loads(y)
+            print self.Y
+        except IOError as e:
+            print e
 if __name__ == '__main__':
      try:
         ml = Machine_learning()

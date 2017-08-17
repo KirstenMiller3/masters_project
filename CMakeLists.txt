@@ -53,8 +53,9 @@ find_package(catkin REQUIRED COMPONENTS
    flow_vectors.msg
    flow_vectors_list.msg
    svm_model.msg
-   coordinate.msg
    file_input.msg
+   scaling.msg
+   list.msg
  )
 
 ## Generate services in the 'srv' folder

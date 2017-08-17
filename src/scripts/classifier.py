@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy
-from masters_project.msg import svm_model, flow_vectors_list
+from masters_project.msg import svm_model, flow_vectors_list, list
 from std_msgs.msg import Bool, String
 import pickle as p
-from sklearn import metrics, svm
+from sklearn import metrics, svm, preprocessing
 from sklearn.model_selection import GridSearchCV
 import os
 
@@ -16,24 +16,37 @@ class Classifier:
         rospy.Subscriber("time_to_classify", Bool, self.classify)
         rospy.Subscriber("load_existing_model", String, self.load_existing_model)
         rospy.Subscriber("optic_flow_parameters", flow_vectors_list, self.helper)
+        #rospy.Subscriber("to_scale", list, self.scaling)
 
         self.model = None  # Stores the model for classification
         self.X = []  # Array to store new X values for predictions
         self.prediction = []
         self.scaler = 0
+        self.training = []
 
-        f = open("gerry_model.txt", "r")
+        f = open("IT_WORKED.txt", "r")
         m = f.read()
         self.model = p.loads(m)
         print "model loaded"
+        self.scaling()
+        self.scaler = preprocessing.StandardScaler().fit(self.training)
 
+    def scaling(self):
+        print "loading..."
+        try:
+            x_file = open("x_pickle.txt", "r")
+            x = x_file.read()
+            xp = p.loads(x)
+            self.training = xp
+            print self.X
+        except IOError as e:
+            print e
 
     # Method that is called whenever the node receives and svm_model message from the __ topic
     def callback(self, data):
         print "entered callback"
         try:
             self.model = p.loads(data.pickles)  # unpickle the model
-            self.scaler = data.scaler
             print self.model
             print "model received and set"
         except p.UnpicklingError:
@@ -41,19 +54,24 @@ class Classifier:
 
     # Receives the optic flow vectors from the __ topic and adds them to X
     def helper(self, data):
-        temp = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
+        X = data.parameters  # this has list of x and y flow vectors stored as flow_vector objects
         print "HELPING"
-        for i in range(len(temp)):
-            x = temp[i].flow_vectors
-            coords = x[0].coordinates
-            coords2 = x[1].coordinates
-            test = [[coords[0], coords[1], coords2[0], coords2[1]]]
-            prediction = self.model.predict(test)
-            print prediction
-            self.prediction.append(prediction)
+        tempX = []
+        # iterate through each optic_flow vector from the image
+        for i in range(len(X)):
+            temp = X[i].flow_vectors  # access the vectors in each index of parameters array
+            xflow = temp[0]  # get x vector ??
+            yflow = temp[1]  # get y vector ??
+
+            flows = [xflow, yflow]
+            tempX.append(flows)  # Append whiiiit?
+            x = self.scaler.transform(tempX)
+            pred = self.model.predict(tempX)
+            print pred
+            self.prediction.append(pred)
 
             file = open("prediction_file", "a")
-            for x in prediction:
+            for x in pred:
                 file.write(str(x) + ",")
             file.close()
            # self.X.append([coords[0], coords[1], coords2[0], coords2[1]])
@@ -61,7 +79,7 @@ class Classifier:
     # Maybe make this run the python script if that would avoid threading issues
     def classify(self, data):
         print "CLASSIFY"
-        scaled_x =
+        #scaled_x =
         self.prediction = self.model.predict(self.X)
         print self.prediction
         """

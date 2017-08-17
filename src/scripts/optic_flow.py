@@ -84,7 +84,7 @@ class OpticFlow:
                     msg.parameters += [temp]
                 """
 
-                flow = self.sub_sample_flow_vectors(flow, 3)
+                flow = self.sub_sample_flow_vectors(flow, 21)
                 print flow
                 for i in range(len(flow)):
                         temp = flow_vectors()
@@ -158,7 +158,7 @@ class OpticFlow:
 
     def sub_sample_flow_vectors(self, flow, step):
         sample = []
-        for i in range(0, len(flow)[:-step], step):
+        for i in range(0, len(flow)-step, step):
             for j in range(0, len(flow[i])-step, step):
                 sumX = 0
                 sumY = 0
