@@ -12,7 +12,7 @@
 # CALLING .fit() AT THE END!! THEN ANOTHER NODE WILL DO CLASSIFICATIONS
 from sklearn import svm, preprocessing
 from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit
-from masters_project.msg import flow_vectors_list, flow_vectors, svm_model, file_input, scaling
+from masters_project.msg import flow_vectors, svm_model, file_input, scaling
 from std_msgs.msg import Bool, String
 import rospy
 import numpy as np
@@ -48,7 +48,8 @@ class Machine_learning:
         # Variable to point to the dictionary key of the current training video
         self.current_training = None
         # classification model (support vector machine)    maybe use parameter server to set the model
-        self.model = svm.SVC(C=1,  gamma=1, kernel='linear', verbose=True, cache_size=1000)
+        #self.model = svm.SVC(C=1,  gamma=1, kernel='linear', verbose=True, cache_size=1000) model used for 10 training vids
+        self.model = svm.SVC(C=10.0,  gamma=0.10000000000000001, kernel='linear', verbose=True, cache_size=1000)
         # Counter
         self.index = 0
         # Array for training data (optic flow vectors)
@@ -61,7 +62,7 @@ class Machine_learning:
         # Filenames for output files
         self.x_pickle_filename = 'x_pickle.txt'
         self.y_pickle_filename = 'y_pickle.txt'
-        self.model_filename = 'new_scaled_model.txt'
+        self.model_filename = 'full_training_model_2.txt'
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
