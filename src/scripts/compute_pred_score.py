@@ -11,8 +11,8 @@ class ComputeScore:
 
         self.prediction_filename = ""
         self.test_filename = ""
-        self.trainingX = "x_pickle_10.txt"
-        self.trainingY = "y_pickle_10.txt"
+        self.trainingX = "baxter_x.txt"
+        self.trainingY = "baxter_y.txt"
         self.correct = 0
         self.count = 0
         self.score = 0
@@ -55,8 +55,10 @@ class ComputeScore:
 
 
             C_range = np.logspace(-2, 10, 13)
+            smaller_c_range = [0.01,0.1,1.0,10.0,100.0,1000.0]
             gamma_range = np.logspace(-9, 3, 13)
-            param_grid = dict(gamma=gamma_range, C=C_range)
+            smaller_gamma_range = [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0]
+            param_grid = dict(gamma=smaller_gamma_range, C=smaller_c_range)
             cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
             print "Searching best parameters"
             grid = GridSearchCV(svm.SVC(), param_grid=param_grid, cv=cv, n_jobs=3, verbose=4)
@@ -65,7 +67,7 @@ class ComputeScore:
             print("The best parameters are %s with a score of %0.2f"
                 % (grid.best_params_, grid.best_score_))
 
-            output = open("best_params.txt", "w")
+            output = open("baxter_best_params.txt", "w")
             output.write("The best parameters are %s with a score of %0.2f" % (grid.best_params_, grid.best_score_))
             output.close()
         except IOError:

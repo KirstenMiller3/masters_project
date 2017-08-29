@@ -49,7 +49,7 @@ class Machine_learning:
         self.current_training = None
         # classification model (support vector machine)    maybe use parameter server to set the model
         #self.model = svm.SVC(C=1,  gamma=1, kernel='linear', verbose=True, cache_size=1000) model used for 10 training vids
-        self.model = svm.SVC(C=10.0,  gamma=0.10000000000000001, kernel='linear', verbose=True, cache_size=1000)
+        self.model = svm.SVC(C=10.0,  gamma=0.01, kernel='linear', verbose=True, cache_size=1000)
         # Counter
         self.index = 0
         # Array for training data (optic flow vectors)
@@ -60,9 +60,9 @@ class Machine_learning:
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
        # self.pub2 = rospy.Publisher("to_scale", list, queue_size=5)
         # Filenames for output files
-        self.x_pickle_filename = 'x_pickle.txt'
-        self.y_pickle_filename = 'y_pickle.txt'
-        self.model_filename = 'full_training_model_2.txt'
+        self.x_pickle_filename = 'baxter_x.txt'
+        self.y_pickle_filename = 'baxter_y.txt'
+        self.model_filename = 'baxter_model.txt'
 
 
     # Method to add the optic flow vectors to X and the related classifications to Y
@@ -197,12 +197,12 @@ class Machine_learning:
         pickleY = p.dumps(self.Y)
 
         #x_file = open(rospy.get_param('~xfile'), "w")
-        x_file = open("x_pickle.txt", "w")
+        x_file = open(self.x_pickle_filename, "w")
         x_file.write(pickleX)
         x_file.close()
 
         #y_file = open(rospy.get_param('~yfile'), "w")
-        y_file = open("y_pickle.txt", "w")
+        y_file = open(self.y_pickle_filename, "w")
         y_file.write(pickleY)
         y_file.close()
 

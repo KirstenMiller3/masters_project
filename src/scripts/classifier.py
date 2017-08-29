@@ -25,7 +25,7 @@ class Classifier:
         self.scaler = 0
         self.training = []
 
-        f = open("new_scaled_model.txt", "r")
+        f = open("baxter_model.txt", "r")
         m = f.read()
         self.model = p.loads(m)
         print "model loaded"

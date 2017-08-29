@@ -10,9 +10,12 @@ from cv_bridge import CvBridge, CvBridgeError
 from std_msgs.msg import String
 
 
-"""
-"""
+
 def image_publisher():
+
+
+
+
 
     # This node is publishing to the camera_image topic with message type Image.
     pub = rospy.Publisher('camera_image', Image, queue_size=1000)
@@ -20,7 +23,7 @@ def image_publisher():
     pub2 = rospy.Publisher('video_name', String, queue_size=9)
     # Tells rospy the name of node
     rospy.init_node('image_publisher', anonymous=True) # maybe don't need this as won't normally be more than one node
-    rate = rospy.Rate(0.5) # Make publishing rate once every 2 seconds (0.5Hz)
+    #rate = rospy.Rate(0.5) # Make publishing rate once every 2 seconds (0.5Hz)
 
     # If user doesn't enter the video input print error message
     if len(sys.argv) < 2:
@@ -82,23 +85,23 @@ def image_publisher():
 
 
         rval, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        flow = cv2.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-        prevgray = gray
+        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+       # flow = cv2.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        #prevgray = gray
 
-        cv2.imshow('flow', draw_flow(gray, flow))
-        cv2.moveWindow("flow", 0, 550);
+       # cv2.imshow('flow', draw_flow(gray, flow))
+       # cv2.moveWindow("flow", 0, 550);
         # Display image with HSV flow??
-        cv2.imshow("flow HSV", draw_hsv(flow))
-        cv2.moveWindow("flow HSV", 700, 550);
+        #cv2.imshow("flow HSV", draw_hsv(flow))
+       # cv2.moveWindow("flow HSV", 700, 550);
 
         # If playing a videofile convert it so is in correct format
         if vidfile and frame is not None:
             frame = np.uint8(frame)
 
-        smaller = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        # Converts image from cv2 to ros format
-        image_message = convert_CV_to_ROS(frame, "passthrough")
+            smaller = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            # Converts image from cv2 to ros format
+            image_message = convert_CV_to_ROS(smaller, "passthrough")
 
         if image_message != last and loop % 4 == 0:
             # Publishes frame to camera_image topic
@@ -109,7 +112,7 @@ def image_publisher():
         # Get next frame
 
         # Introduces a delay of 500 miliseconds so that each frame is published
-        key = cv2.waitKey(100) # was 100
+        key = cv2.waitKey(50) # was 100
         
         # exit loop if user presses ESC
         if key == 27 or key == 1048603:
@@ -120,6 +123,9 @@ def image_publisher():
 
 
 def draw_flow(img, flow, step=16):
+    # This method draws the optic flow visualisation between this frame and the last
+    # frame
+    #
     h, w = img.shape[:2]
     y, x = np.mgrid[step/2:h:step, step/2:w:step].reshape(2,-1).astype(int)
     fx, fy = flow[y,x].T
