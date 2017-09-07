@@ -21,9 +21,10 @@ class Image_Display():
     def __init__(self):
         # This node is publishing to the camera_image topic with message type Image.
         self.pub = rospy.Publisher('camera_image', Image, queue_size=1000)
-        # Publisher so machine learning node knows which training matrix to use
+        # Publisher so machine learning node knows which classifications to use
         self.pub2 = rospy.Publisher('video_name', String, queue_size=9)
-        rospy.init_node('image_publisher', anonymous=True)
+        rospy.init_node('image_display', anonymous=True)
+        self.scale = 0.25  # Factor to resize image
 
     # Starts the video input and then displays it to the user along with optic flow visualisation and HSV visualisation
     # then does some processing to image and publishes.
@@ -68,7 +69,7 @@ class Image_Display():
         last = None
         loop = 0
         while rval:
-            # Display the image/frame
+            # Display the image
             cv2.imshow("Stream: " + resource_name, frame)
             cv2.moveWindow("Stream: " + resource_name, 350, 0);
             # Get next frame
@@ -82,7 +83,6 @@ class Image_Display():
             cv2.imshow('flow', flow_image)
             cv2.moveWindow("flow", 0, 550);
             # Display the HSV visualisation
-            cv2.imwrite(str(self.count) + ".png", flow_image)
             hsv_image = self.draw_hsv(flow)
             cv2.imshow("flow HSV", hsv_image)
             cv2.moveWindow("flow HSV", 700, 550);
@@ -90,9 +90,11 @@ class Image_Display():
             # If playing a videofile convert it so is in correct format
             if vidfile and frame is not None:
                 frame = np.uint8(frame)
-                smaller = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                # Converts image from cv2 to ros format
-                image_message = self.convert_CV_to_ROS(smaller, "passthrough")
+
+            smaller = cv2.resize(frame, (0, 0), fx=self.scale, fy=self.scale)
+            # Converts image from cv2 to ros format
+            image_message = self.convert_CV_to_ROS(smaller, "passthrough")
+
             # Publishes every 4th frame to camera_image topic
             if image_message != last and loop % 4 == 0:
                 self.pub.publish(image_message)

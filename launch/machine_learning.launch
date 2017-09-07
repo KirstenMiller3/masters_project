@@ -1,5 +1,0 @@
-<launch>
-
-	<param name="xfile" value="x_pickle.txt"/>
-	<param name="yfile" value="y_pickle.txt"/>
-</launch>

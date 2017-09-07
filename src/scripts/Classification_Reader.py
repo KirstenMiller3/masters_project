@@ -18,7 +18,7 @@ class Classification_Reader():
 
     def __init__(self):
         # Set up node and publisher
-        rospy.init_node('file_reader', anonymous=True, disable_signals=True)
+        rospy.init_node('classification_reader', anonymous=True, disable_signals=True)
         pub = rospy.Publisher("classification_data", file_input, queue_size=3)
 
         # If user doesn't enter a filename print error message and exit
@@ -39,7 +39,7 @@ class Classification_Reader():
                             count += 1
         except IOError:
             print "The file " + resource + " does not exist"
-            rospy.signal_shutdown("shutting down")
+            exit(0)
 
         # store the name of the file
         msg.name = resource[:-4]

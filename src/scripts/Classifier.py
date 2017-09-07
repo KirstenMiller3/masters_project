@@ -4,13 +4,8 @@ from masters_project.msg import svm_model, flow_vectors
 from std_msgs.msg import Bool, String
 import pickle
 import numpy as np
-from sklearn import metrics, svm, preprocessing
-from sklearn.metrics import accuracy_score, confusion_matrix, cohen_kappa_score
-import matplotlib.pyplot as plt
-from sklearn.model_selection import GridSearchCV
-import os
+from sklearn.metrics import accuracy_score, confusion_matrix
 import re
-import itertools
 
 class Classifier:
     """
@@ -23,32 +18,39 @@ class Classifier:
         rospy.Subscriber("svm_model", svm_model, self.callback)
         rospy.Subscriber("load_existing_model", String, self.load_existing_model)
         rospy.Subscriber("optic_flow_parameters", flow_vectors, self.helper)
-        rospy.Subscriber("model_evaluation", Bool, self.evaluate)
+        rospy.Subscriber("prediction_evaluation", Bool, self.evaluate)
         rospy.Subscriber("pickle_prediction", Bool, self.pickle_prediction)
 
         self.model = None  # Stores the model for classification
-        self.prediction = []
-        self.training = []
-        self.true_y = []
+        self.prediction = []  # Where predictions are added
+        self.true_y = []  # Correct classifcations
 
+        # Filenames
+        self.model_filename = "model.txt"
         self.prediction_filename = "predicted_classifications.txt"
         self.actual_filename = "actual_classifications.txt"
 
-        f = open("baxter_optimal.txt", "r")
-        m = f.read()
-        self.model = pickle.loads(m)
-        print "model loaded"
+        # Open and load model and classification data of video trying to predict
+        try:
+            f = open(self.model_filename, "r")
+            m = f.read()
+            self.model = pickle.loads(m)
+            print "model loaded"
 
-        g = open("baxterPOV2.txt", "r")
-        for x in g:
-            classification = (re.split(',| +', x))
-            self.true_y += map(int, classification)
+            g = open(self.actual_filename, "r")
+            for x in g:
+                classification = (re.split(',| +', x))
+                self.true_y += map(int, classification)
+                print "classifications loaded"
+        except IOError:
+            print "IO error"
+            exit(0)
 
 
     # Method that is called whenever the node receives a svm_model message
     def callback(self, data):
         try:
-            self.model = pickle.loads(data.pickles)  # unpickle the model
+            self.model = pickle.loads(data.pickles)
             print "model received and set"
         except pickle.UnpicklingError:
             print "Not able to unpickle data"
@@ -61,11 +63,10 @@ class Classifier:
         print pred
         self.prediction.append(pred)
 
-    # Callback to pickle the prediced and actual classifications
+    # Callback to pickle the predicted and actual classifications
     def pickle_prediction(self, data):
         pickle_x = pickle.dumps(self.prediction)
         pickle_y = pickle.dumps(self.true_y)
-
         try:
             x_file = open(self.prediction_filename, "w")
             x_file.write(pickle_x)
@@ -95,10 +96,8 @@ class Classifier:
     def evaluate(self, data):
         score = accuracy_score(self.true_y, self.prediction)
         matrix = confusion_matrix(self.true_y, self.prediction)
-        kappa = cohen_kappa_score(self.true_y, self.prediction)
         print score
         print matrix
-        print kappa
 
 
 if __name__ == '__main__':

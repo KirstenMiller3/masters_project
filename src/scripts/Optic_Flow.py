@@ -2,34 +2,30 @@
 
 import rospy
 from sensor_msgs.msg import Image
-from std_msgs.msg import String
-from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import cv2
 from masters_project.msg import flow_vectors
+from helpers import convert_ROS_to_CV
 
 
 class OpticFlow:
     """
-    ROS node
-    ROS node that is responsible for accessing an input video stream (via webcam, file, url)
-    and displaying it to the user normally, with optic flow visualisation and with HSV optic
-    flow visualisation. It is also responsible for converting each frame to a ROS image and
-    publishing it.
+    ROS node that receives an image and computes the optic flow for it. Then it creates
+    a subsampled version of the optic flow and publishes it to the optic_flow_parameters
+    topic.
     """
     def __init__(self):
         self.pub = rospy.Publisher('optic_flow_parameters', flow_vectors, queue_size=100)
         self.cv_image = None  # stores the image in openCV format
         self.prevgray_initialised = False  # Boolean to check prevray is only initialised once
         self.prevgray = None  # stores previous grayscale image for optic flow
-        self.display_image = None
         rospy.init_node('optic_flow', anonymous=True)
         rospy.Subscriber('camera_image', Image, self.callback)
 
     # This is called whenever a message is published to camera_image topic
     def callback(self, ros_image):
         # convert ros image back to cv format to compute optical flow
-        self.cv_image = self.convert_ROS_to_CV(ros_image, "passthrough")
+        self.cv_image = convert_ROS_to_CV(ros_image, "passthrough")
         # For the first image we receive convert it to gray and set it as prev so that we can compute optical
         # flow from next image and prev one
         if self.cv_image is not None and not self.prevgray_initialised:
@@ -70,14 +66,6 @@ class OpticFlow:
                 averageY = sumY / (step*step)
                 sample += [[averageX, averageY]]
         return sample
-
-    def convert_ROS_to_CV(self, image, encoding):
-        try:
-            bridge = CvBridge()
-            cv_image = bridge.imgmsg_to_cv2(image, desired_encoding=encoding)
-            return cv_image
-        except CvBridgeError, e:
-            print e
 
 
 if __name__ == '__main__':

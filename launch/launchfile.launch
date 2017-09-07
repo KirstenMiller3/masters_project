@@ -1,0 +1,7 @@
+<launch>
+  <node name="optic_flow" pkg="masters_project" type="Optic_Flow.py"/>
+  <node name="image_display" pkg="masters_project" type="Image_Display.py"/>
+  <node name="classification_reader" pkg="masters_project" type="Classification_Reader.py"/>
+  <node name="classifier" pkg="masters_project" type="Classifier.py"/>
+  <node name="machine_learning" pkg="masters_project" type="Machine_Learning.py"/>
+</launch>

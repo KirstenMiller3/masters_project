@@ -13,6 +13,8 @@ class ComputeScore:
         self.trainingY = "robot_y.txt"
         self.output = "baxter_best_params.txt"
 
+    # Method for computing optimal parameters for model. Some code is adapted from:
+    # http://scikit-learn.org/0.15/auto_examples/grid_search_digits.html
     def train_model(self):
 
         try:

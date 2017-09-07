@@ -2,39 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d5d81fa2-5b71-47f4-93d0-8d71776d00c3" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/frame_checker.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/gerry_test.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/node_checker.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/open_video_test.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/test_ros_opencv_driver.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/debugging/video_capture.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/all_one_node.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/baxter_best_params.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/baxter_x.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/baxter_y.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/best_params.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/classifier.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/commenting.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/compute_pred_score.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/file_reader.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/full_x_pickle.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/full_y_pickle.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/image_publisher.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/image_saver.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/line to get the fit method working" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/machine_learning.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/optic_flow.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/self_detector.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/sklearn.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/sklearn_example.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/testX.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/x_pickle.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/x_pickle_10.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/x_pickle_somevids.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/y_pickle.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/y_pickle_10.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/w.avi" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/launch/machine_learning.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripts/graphy.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/example_test.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Classification_Reader.py" afterPath="$PROJECT_DIR$/src/scripts/Classification_Reader.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Classifier.py" afterPath="$PROJECT_DIR$/src/scripts/Classifier.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Compute_Parameters.py" afterPath="$PROJECT_DIR$/src/scripts/Compute_Parameters.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Image_Display.py" afterPath="$PROJECT_DIR$/src/scripts/Image_Display.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Image_Saver.py" afterPath="$PROJECT_DIR$/src/scripts/Image_Saver.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Machine_Learning.py" afterPath="$PROJECT_DIR$/src/scripts/Machine_Learning.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/Optic_Flow.py" afterPath="$PROJECT_DIR$/src/scripts/Optic_Flow.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripts/helpers.py" afterPath="$PROJECT_DIR$/src/scripts/helpers.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -53,19 +31,41 @@
       <file leaf-file-name="helpers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripts/helpers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="21" column="29" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+            <state relative-caret-position="238">
+              <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Image_Saver.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripts/Image_Saver.py">
+      <file leaf-file-name="Compute_Parameters.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripts/Compute_Parameters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="136">
+              <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="video_capture.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripts/video_capture.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="25" column="39" lean-forward="false" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Classification_Reader.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripts/Classification_Reader.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="901">
+              <caret line="55" column="29" lean-forward="false" selection-start-line="55" selection-start-column="29" selection-end-line="55" selection-end-column="29" />
+              <folding>
+                <element signature="e#24#36#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,10 +73,22 @@
       <file leaf-file-name="Image_Display.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripts/Image_Display.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="19" selection-end-column="7" />
+            <state relative-caret-position="680">
+              <caret line="100" column="21" lean-forward="true" selection-start-line="100" selection-start-column="21" selection-end-line="100" selection-end-column="21" />
               <folding>
                 <element signature="e#24#36#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Image_Saver.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripts/Image_Saver.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="34" column="20" lean-forward="false" selection-start-line="34" selection-start-column="20" selection-end-line="34" selection-end-column="20" />
+              <folding>
+                <element signature="e#23#35#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -85,8 +97,8 @@
       <file leaf-file-name="Optic_Flow.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scripts/Optic_Flow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="7" lean-forward="true" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+            <state relative-caret-position="136">
+              <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -127,6 +139,10 @@
       <find>index</find>
       <find>load</find>
       <find>self.onc</find>
+      <find>os</find>
+      <find>os</find>
+      <find>self.trai</find>
+      <find>displa</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -142,7 +158,6 @@
         <option value="$PROJECT_DIR$/src/scripts/self_detector.py" />
         <option value="$PROJECT_DIR$/src/scripts/sklearn_example.py" />
         <option value="$PROJECT_DIR$/src/scripts/optic_flow.py" />
-        <option value="$PROJECT_DIR$/src/scripts/graphy.py" />
         <option value="$PROJECT_DIR$/src/scripts/image_publisher.py" />
         <option value="$PROJECT_DIR$/src/scripts/image_displayer.py" />
         <option value="$PROJECT_DIR$/src/scripts/line to get the fit method working" />
@@ -152,9 +167,16 @@
         <option value="$PROJECT_DIR$/src/debugging/video_capture.py" />
         <option value="$PROJECT_DIR$/src/scripts/machine_learning.py" />
         <option value="$PROJECT_DIR$/src/scripts/compute_pred_score.py" />
+        <option value="$PROJECT_DIR$/src/scripts/confusion.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Classifier.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Compute_Parameters.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Machine_Learning.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Image_Saver.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Optic_Flow.py" />
+        <option value="$PROJECT_DIR$/src/scripts/Classification_Reader.py" />
         <option value="$PROJECT_DIR$/src/scripts/helpers.py" />
         <option value="$PROJECT_DIR$/src/scripts/Image_Display.py" />
-        <option value="$PROJECT_DIR$/src/scripts/Optic_Flow.py" />
+        <option value="$PROJECT_DIR$/src/scripts/graphy.py" />
       </list>
     </option>
   </component>
@@ -355,157 +377,29 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="8" />
+      <option name="time" value="9" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1989">
-          <caret line="117" column="57" lean-forward="false" selection-start-line="117" selection-start-column="57" selection-end-line="117" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="35" column="0" lean-forward="true" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="11" lean-forward="true" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1734">
-          <caret line="107" column="26" lean-forward="false" selection-start-line="107" selection-start-column="26" selection-end-line="107" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py" />
     <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1870">
-          <caret line="117" column="57" lean-forward="true" selection-start-line="117" selection-start-column="57" selection-end-line="117" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="27" column="20" lean-forward="true" selection-start-line="27" selection-start-column="20" selection-end-line="27" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="21" lean-forward="false" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1785">
-          <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working" />
     <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="15" column="43" lean-forward="false" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2261">
-          <caret line="140" column="0" lean-forward="false" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="59" lean-forward="true" selection-start-line="3" selection-start-column="59" selection-end-line="3" selection-end-column="59" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="24" lean-forward="false" selection-start-line="2" selection-start-column="24" selection-end-line="2" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py" />
     <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2261">
-          <caret line="140" column="0" lean-forward="true" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1904">
-          <caret line="112" column="0" lean-forward="true" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/debugging/gerry_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1309">
-          <caret line="79" column="44" lean-forward="false" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/all_one_node.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="27" column="36" lean-forward="false" selection-start-line="27" selection-start-column="36" selection-end-line="27" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/debugging/gerry_test.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/all_one_node.py" />
     <entry file="file:///usr/lib/python2.7/unittest/case.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3689">
@@ -521,163 +415,106 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripts/grid_search_param_tuning.py" />
-    <entry file="file://$PROJECT_DIR$/src/scripts/commenting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/self_detector.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/sklearn_example.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/debugging/frame_checker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="32" column="5" lean-forward="true" selection-start-line="32" selection-start-column="5" selection-end-line="32" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/debugging/node_checker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/commenting.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/self_detector.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/sklearn_example.py" />
+    <entry file="file://$PROJECT_DIR$/src/debugging/frame_checker.py" />
+    <entry file="file://$PROJECT_DIR$/src/debugging/node_checker.py" />
     <entry file="file://$PROJECT_DIR$/src/debugging/video_node.cpp" />
     <entry file="file://$PROJECT_DIR$/src/debugging/video_node.py" />
-    <entry file="file://$PROJECT_DIR$/src/debugging/test_ros_opencv_driver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="23" column="53" lean-forward="false" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/debugging/test_ros_opencv_driver.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/optic_flow.py" />
     <entry file="file://$PROJECT_DIR$/src/scripts/image_displayer.py" />
     <entry file="file://$PROJECT_DIR$/src/scripts/image_publisher.py" />
-    <entry file="file://$PROJECT_DIR$/src/debugging/open_video_test.py">
+    <entry file="file://$PROJECT_DIR$/src/debugging/open_video_test.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/image_saver.py" />
+    <entry file="file://$PROJECT_DIR$/src/debugging/video_capture.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/compute_pred_score.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/file_reader.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/confusion.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/Machine_Learning.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="1190">
+          <caret line="77" column="16" lean-forward="true" selection-start-line="77" selection-start-column="16" selection-end-line="77" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/classifier.py">
+    <entry file="file://$PROJECT_DIR$/src/scripts/Classifier.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="37" lean-forward="true" selection-start-line="17" selection-start-column="37" selection-end-line="17" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/image_saver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="20" lean-forward="true" selection-start-line="36" selection-start-column="20" selection-end-line="36" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/graphy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="54" column="0" lean-forward="true" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#16#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/debugging/video_capture.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="111" lean-forward="true" selection-start-line="1" selection-start-column="111" selection-end-line="1" selection-end-column="111" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/machine_learning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="93" column="54" lean-forward="true" selection-start-line="93" selection-start-column="54" selection-end-line="93" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/compute_pred_score.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="23" lean-forward="true" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/file_reader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="51" column="26" lean-forward="true" selection-start-line="51" selection-start-column="26" selection-end-line="51" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/line to get the fit method working">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="69" lean-forward="true" selection-start-line="17" selection-start-column="69" selection-end-line="17" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/helpers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="29" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="143">
+          <caret line="75" column="34" lean-forward="true" selection-start-line="75" selection-start-column="34" selection-end-line="75" selection-end-column="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripts/Image_Saver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="527">
+          <caret line="34" column="20" lean-forward="false" selection-start-line="34" selection-start-column="20" selection-end-line="34" selection-end-column="20" />
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/video_capture.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="39" lean-forward="false" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripts/Image_Display.py">
+    <entry file="file://$PROJECT_DIR$/src/scripts/Classification_Reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="19" selection-end-column="7" />
+        <state relative-caret-position="901">
+          <caret line="55" column="29" lean-forward="false" selection-start-line="55" selection-start-column="29" selection-end-line="55" selection-end-column="29" />
           <folding>
             <element signature="e#24#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/helpers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/Compute_Parameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/Image_Display.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="100" column="21" lean-forward="true" selection-start-line="100" selection-start-column="21" selection-end-line="100" selection-end-column="21" />
+          <folding>
+            <element signature="e#24#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/graphy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="89">
+          <caret line="30" column="45" lean-forward="true" selection-start-line="30" selection-start-column="45" selection-end-line="30" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripts/Optic_Flow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="7" lean-forward="true" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>

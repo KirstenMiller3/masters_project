@@ -2,8 +2,8 @@
 
 import rospy
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
 import cv2
+from helpers import convert_ROS_to_CV
 
 
 
@@ -22,14 +22,12 @@ class Image_Saver:
 
     # Converts each image to an OpenCV format and saves it
     def callback(self, ros_image):
-        try:
-            # convert ros image back to cv format to compute optical flow
-            self.cv_image = self.bridge.imgmsg_to_cv2(ros_image, desired_encoding="passthrough")
-            # Save the image
-            cv2.imwrite(str(self.count)+".png", self.cv_image) # testing to make sure no frames are published twice.
-            self.count += 1
-        except CvBridgeError as e:
-            print(e)
+        # convert ros image back to cv format to compute optical flow
+        self.cv_image = convert_ROS_to_CV(ros_image, desired_encoding="passthrough")
+        # Save the image
+        cv2.imwrite(str(self.count)+".png", self.cv_image) # testing to make sure no frames are published twice.
+        self.count += 1
+
 
 if __name__ == '__main__':
     try:

@@ -24,10 +24,10 @@ class Machine_learning:
         rospy.Subscriber("load_training_data", Bool, self.load_training_data)
         rospy.Subscriber("pickle_training_data", Bool, self.pickle_training_data)
 
-        self.classifications = {}
+        self.classifications = {}  # where classification data is stored
         self.current_training = None  # Points to the dictionary key of the current training video
         self.model = svm.SVC(C=1.0,  gamma=0.01, kernel='linear', verbose=True, cache_size=1000)
-        self.index = 0
+        self.index = 0  # Used for incrementing through classification arrays
         self.X = []  # Array for training data (optic flow vectors)
         self.Y = []  # Array for classifications (1s or 0s)
         self.pub = rospy.Publisher("svm_model", svm_model, queue_size=5)
@@ -41,7 +41,8 @@ class Machine_learning:
         x_parameter = list(data.flow_vectors)  # this has list of x and y flow vectors stored as flow_vector objects
         # error checking
         if self.current_training not in self.classifications:
-            self.shutdown("Error: Classifications for video have not been passed to node")
+            print "Classifications have not been sent to node"
+            exit(0)
         # access the correct classification for that frame
         y_parameter = self.classifications[self.current_training][self.index]
         self.X.append(x_parameter)  # add new training data
@@ -52,35 +53,32 @@ class Machine_learning:
     def compute_fit(self, data):
         # Check to make sure X and Y parameters are correct, if not shut down node
         if self.X == [] or self.Y == [] or len(self.X) is not len(self.Y):
-            self.shutdown("Error: no X or Y data to train model on")
+            print "Error: no X or Y data to train model on"
+            exit(0)
         # Fit the model to the data
         self.model.fit(self.X, self.Y)
+        # Pickle the model and write to file
         s = p.dumps(self.model)
         msg = svm_model()
         msg.pickles = s
         self.pub.publish(msg)
         try:
-            model_file = open(self.model_filename, "w")  # should this be hardcoded? maybe instance variable
+            model_file = open(self.model_filename, "w")
             model_file.write(s)
             model_file.close()
         except IOError:
             print "Error opening file"
 
-    # Makes sure accessing the correct classifications for the video
+    # Makes sure accessing the correct classifications for the current video
     def set_training(self, data):
         self.current_training = data.data
-        self.index = 0
+        self.index = 0  # Reset index
 
     # Callback method to add the classification data to a dictionary with the filename
     # as the key
     def add_data(self, data):
         self.classifications[data.name] = list(data.classifiers)
         print self.classifications[data.name]
-
-    # Terminate node
-    def shutdown(self, message):
-        print message
-        rospy.signal_shutdown(message)
 
     # callback to pickle and save the training data
     def pickle_training_data(self, data):
